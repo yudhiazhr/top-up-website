@@ -33,14 +33,13 @@ export const SignUp = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Use the uid as the document ID
       const userDocRef = doc(db, "user", user.uid);
       await setDoc(userDocRef, {
         uid: user.uid,
         username: username,
         email: email,
         "phone number": phoneNumber,
-        password: password, // Avoid storing plaintext passwords in production
+        password: password,
       });
 
       alert("Account created successfully!");

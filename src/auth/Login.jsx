@@ -31,9 +31,11 @@ export const Login = ({ setUserData }) => {
         const userData = userDocSnap.data();
         console.log("Fetched User Data:", userData);
 
-        setUserData(userData);
+        localStorage.setItem("userData", JSON.stringify(userData));
 
-        navigate("/");
+        setUserData(userData);
+        window.location.reload();
+        await navigate("/");
       } else {
         console.log("No such user document found!");
         setError("User data not found. Please contact support.");

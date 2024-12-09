@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/imgs/logo.png";
 import { useState, useEffect } from "react";
 
-export const Navbar = ({ userData }) => { 
+export const Navbar = ({ userData }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
 
@@ -12,21 +12,19 @@ export const Navbar = ({ userData }) => {
     } else {
       setIsLoggedIn(false);
     }
-  }, [userData]); 
+  }, [userData]);
 
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className="w-full h-24 flex gap-12 items-center justify-between fixed top-0 left-0 right-0 px-[300px] z-10">
+    <nav className="w-full h-24 flex gap-12 items-center justify-between fixed top-0 left-0 right-0 px-[300px] z-10 bg-[#212121]">
       <div className="flex gap-12 items-center">
         <Link to={`/`}>
           <img src={logo} className="w-32 h-9" alt="Logo" />
         </Link>
 
         <form className="w-80">
-          <label
-            className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-          >
+          <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">
             Search
           </label>
           <div className="relative">
@@ -67,7 +65,9 @@ export const Navbar = ({ userData }) => {
           <li>
             <Link
               to={`/`}
-              className={`px-4 py-2 rounded-lg ${isActive("/") ? "text-yellow-600" : "hover:text-yellow-500"} transition-all`}
+              className={`px-4 py-2 rounded-lg ${
+                isActive("/") ? "text-yellow-600" : "hover:text-yellow-500"
+              } transition-all`}
             >
               Beranda
             </Link>
@@ -75,7 +75,11 @@ export const Navbar = ({ userData }) => {
           <li>
             <Link
               to={`/product`}
-              className={`px-4 py-2 rounded-lg ${isActive("/product") ? "text-yellow-600" : "hover:text-yellow-500"} transition-all`}
+              className={`px-4 py-2 rounded-lg ${
+                isActive("/product")
+                  ? "text-yellow-600"
+                  : "hover:text-yellow-500"
+              } transition-all`}
             >
               Produk
             </Link>
@@ -83,7 +87,11 @@ export const Navbar = ({ userData }) => {
           <li>
             <Link
               to={`/check-order`}
-              className={`px-4 py-2 rounded-lg ${isActive("/check-order") ? "text-yellow-600" : "hover:text-yellow-500"} transition-all`}
+              className={`px-4 py-2 rounded-lg ${
+                isActive("/check-order")
+                  ? "text-yellow-600"
+                  : "hover:text-yellow-500"
+              } transition-all`}
             >
               Cek Pesanan
             </Link>
@@ -97,8 +105,11 @@ export const Navbar = ({ userData }) => {
           className="flex justify-center items-center w-[156px] h-[46px] border-l text-white"
         >
           <img
-            src="https://placehold.co/48x48"
-            className="rounded-sm mx-auto"
+            src={`${
+              userData.photoUrl ||
+              `https://png.pngtree.com/png-vector/20220817/ourmid/pngtree-man-avatar-with-circle-frame-vector-ilustration-png-image_6110328.png`
+            }`}
+            className="rounded-sm mx-auto w-12 h-12"
             alt="User Profile"
           />
           <h1>{userData.username}</h1>
