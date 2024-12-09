@@ -1,39 +1,94 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import Bg from "../assets/imgs/Background.png";
+import { auth, db } from "../Firebase";
 
-export const Login = () => {
+export const Login = ({ setUserData }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      console.log("Authenticated User:", user);
+
+      const userDocRef = doc(db, "user", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        console.log("Fetched User Data:", userData);
+
+        setUserData(userData);
+
+        navigate("/");
+      } else {
+        console.log("No such user document found!");
+        setError("User data not found. Please contact support.");
+      }
+    } catch (err) {
+      console.error("Login Error:", err.message);
+      setError("Failed to log in. Please check your email and password.");
+    }
+  };
+
   return (
     <div className="relative text-white">
-      <img src={Bg} className="z-[-1] absolute w-full" alt="" />
+      <img src={Bg} className="z-[-1] absolute w-full" alt="Background" />
       <div className="flex px-[300px] py-32 z-50">
         <div className="flex flex-col gap-8 justify-center w-1/2 h-[670px] bg-[#2b2b2b] rounded-2xl px-8">
           <h1 className="text-5xl font-bold">Masuk</h1>
           <h2>Masuk dengan akun yang telah Kamu daftarkan.</h2>
 
-          <form action="" className="flex flex-col gap-6">
+          {error && <p className="text-red-500">{error}</p>}
+
+          <form onSubmit={handleLogin} className="flex flex-col gap-6">
             <div className="flex flex-col gap-3">
-              <label htmlFor="">Email</label>
+              <label htmlFor="email">Email</label>
               <input
-                type="text"
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
                 className="p-3 bg-[#212121] rounded-lg"
+                required
               />
             </div>
 
             <div className="flex flex-col gap-3">
-              <label htmlFor="">Password</label>
+              <label htmlFor="password">Password</label>
               <input
                 type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
                 className="p-3 bg-[#212121] rounded-lg"
+                required
               />
             </div>
 
             <div className="flex w-full justify-between">
-              <div className="flex gap-3">Ingat saya</div>
+              <div className="flex gap-3">
+                <input type="checkbox" id="remember" />
+                <label htmlFor="remember">Ingat saya</label>
+              </div>
 
               <Link
-                to={``}
+                to={`/forgot-password`}
                 className="text-yellow-600 hover:underline duration-300 transition-all"
               >
                 Lupa Kata Sandimu?
