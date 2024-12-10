@@ -13,6 +13,7 @@ import { ListVoucher } from "./components/ListVoucher";
 import { Login } from "./auth/login";
 import { SignUp } from "./auth/SignUp";
 import { useEffect, useState } from "react";
+import { ProductOrder } from "./pages/PlaceOrder";
 
 const App = () => {
   const [userData, setUserData] = useState(null);
@@ -54,6 +55,8 @@ const App = () => {
             <Route path="games" element={<ListGames />} />
             <Route path="voucher" element={<ListVoucher />} />
           </Route>
+
+          <Route path="/id/:id" element={ isAuthenticated ? <ProductOrder/> : <Navigate to="/login"/>}/>
 
           <Route
             path="/check-order/"

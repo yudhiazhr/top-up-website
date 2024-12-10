@@ -1,26 +1,42 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 
 export const Product = () => {
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path;
+
   return (
     <div className="flex flex-col min-h-dvh w-full pt-36 text-white px-[300px]">
       <div className="flex flex-col gap-5">
         <div className="flex gap-4">
           <Link
-            to={`/product/`}
-            className="flex justify-center items-cennter px-5 py-2 bg-yellow-600 rounded-lg"
+            to={`/product`}
+            className={`flex justify-center items-center px-5 py-2 ${
+              isActive("/product")
+                ? "bg-yellow-600"
+                : "bg-[#2b2b2b] hover:bg-yellow-500"
+            } rounded-lg duration-300 transition-all`}
           >
             Semua produk
           </Link>
 
           <Link
             to={`/product/games`}
-            className="flex justify-center items-cennter px-5 py-2 bg-[#2b2b2b] rounded-lg"
+            className={`flex justify-center items-center px-5 py-2 ${
+              isActive("/product/games")
+                ? "bg-yellow-600"
+                : "bg-[#2b2b2b] hover:bg-yellow-500"
+            } rounded-lg duration-300 transition-all`}
           >
             Games
           </Link>
           <Link
             to={`/product/voucher`}
-            className="flex justify-center items-cennter px-5 py-2 bg-[#2b2b2b] rounded-lg"
+            className={`flex justify-center items-center px-5 py-2 ${
+              isActive("/product/voucher")
+                ? "bg-yellow-600"
+                : "bg-[#2b2b2b] hover:bg-yellow-500"
+            } rounded-lg duration-300 transition-all`}
           >
             Voucher
           </Link>

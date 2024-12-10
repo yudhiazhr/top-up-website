@@ -9,12 +9,17 @@ export const Profile = ({ userData }) => {
     await navigate("/");
   };
 
+  const isActive = (path) => location.pathname === path;
+
   return (
     <div className="flex flex-col gap-8 px-[300px] py-32 text-white">
       <div className="flex justify-between items-center">
         <div className="flex gap-7 items-center">
           <img
-            src={`${userData.photoUrl || `https://png.pngtree.com/png-vector/20220817/ourmid/pngtree-man-avatar-with-circle-frame-vector-ilustration-png-image_6110328.png`}`}
+            src={`${
+              userData.photoUrl ||
+              `https://png.pngtree.com/png-vector/20220817/ourmid/pngtree-man-avatar-with-circle-frame-vector-ilustration-png-image_6110328.png`
+            }`}
             className="w-32 h-32 rounded-full"
             alt=""
           />
@@ -49,15 +54,19 @@ export const Profile = ({ userData }) => {
 
       <div className="flex gap-3">
         <Link
-          to={`/profile/`}
-          className="flex justify-center items-center px-5 py-2 bg-yellow-600 rounded-lg"
+          to={`/profile`}
+          className={`flex justify-center items-center px-5 py-2 ${
+            isActive("/profile") ? "bg-yellow-600" : "bg-[#2b2b2b] hover:bg-yellow-500"
+          } rounded-lg duration-300 transition-all`}
         >
           Beranda
         </Link>
 
         <Link
           to={`/profile/history`}
-          className="flex justify-center items-center px-5 py-2 bg-[#2b2b2b] rounded-lg"
+          className={`flex justify-center items-center px-5 py-2 ${
+            isActive("/profile/history") ? "bg-yellow-600" : "bg-[#2b2b2b] hover:bg-yellow-500"
+          } rounded-lg duration-300 transition-all`}
         >
           Riwayat
         </Link>
