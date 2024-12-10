@@ -5,8 +5,8 @@ export const Profile = ({ userData }) => {
 
   const handleLogout = async () => {
     localStorage.removeItem("userData");
-    window.location.reload();
     await navigate("/");
+    window.location.reload();
   };
 
   const isActive = (path) => location.pathname === path;
@@ -56,7 +56,9 @@ export const Profile = ({ userData }) => {
         <Link
           to={`/profile`}
           className={`flex justify-center items-center px-5 py-2 ${
-            isActive("/profile") ? "bg-yellow-600" : "bg-[#2b2b2b] hover:bg-yellow-500"
+            isActive("/profile")
+              ? "bg-yellow-600"
+              : "bg-[#2b2b2b] hover:bg-yellow-500"
           } rounded-lg duration-300 transition-all`}
         >
           Beranda
@@ -65,7 +67,9 @@ export const Profile = ({ userData }) => {
         <Link
           to={`/profile/history`}
           className={`flex justify-center items-center px-5 py-2 ${
-            isActive("/profile/history") ? "bg-yellow-600" : "bg-[#2b2b2b] hover:bg-yellow-500"
+            isActive("/profile/history")
+              ? "bg-yellow-600"
+              : "bg-[#2b2b2b] hover:bg-yellow-500"
           } rounded-lg duration-300 transition-all`}
         >
           Riwayat

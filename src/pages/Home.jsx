@@ -1,11 +1,10 @@
-import { Link } from "react-router-dom";
 import BannerCarousel from "../assets/imgs/Banner-carousel.png";
 import BannerCarousel2 from "../assets/imgs/Banner-carousel-2.png";
 
 import Banner from "../assets/imgs/Banner.png";
 import { AllProduct } from "../components/AllProduct";
 
-export const Home = () => {
+export const Home = () => {  
   return (
     <div className="flex flex-col min-h-dvh w-full pt-24 text-white">
       {/* Jumbotron */}

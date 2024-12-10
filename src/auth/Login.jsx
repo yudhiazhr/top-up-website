@@ -34,8 +34,8 @@ export const Login = ({ setUserData }) => {
         localStorage.setItem("userData", JSON.stringify(userData));
 
         setUserData(userData);
-        window.location.reload();
         await navigate("/");
+        window.location.reload();
       } else {
         console.log("No such user document found!");
         setError("User data not found. Please contact support.");
