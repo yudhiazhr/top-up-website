@@ -17,7 +17,7 @@ export const Navbar = ({ userData }) => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className="w-full h-24 flex gap-12 items-center justify-between fixed top-0 left-0 right-0 px-[300px] z-10 bg-[#212121]">
+    <nav className="w-full h-24 flex gap-12 items-center justify-between fixed top-0 left-0 right-0 px-[300px]  bg-[#212121] z-50">
       <div className="flex gap-12 items-center">
         <Link to={`/`}>
           <img src={logo} className="w-32 h-9" alt="Logo" />
@@ -74,9 +74,9 @@ export const Navbar = ({ userData }) => {
           </li>
           <li>
             <Link
-              to={`/product`}
+              to="/product"
               className={`px-4 py-2 rounded-lg ${
-                isActive("/product")
+                location.pathname.startsWith("/product")
                   ? "text-yellow-600"
                   : "hover:text-yellow-500"
               } transition-all`}

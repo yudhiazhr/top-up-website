@@ -14,6 +14,8 @@ import { Login } from "./auth/login";
 import { SignUp } from "./auth/SignUp";
 import { useEffect, useState } from "react";
 import { ProductOrder } from "./pages/PlaceOrder";
+import { ProcessingPayment } from "./pages/ProcessingPayment";
+import { ConfirmationPayment } from "./pages/ConfirmationPayment";
 
 const App = () => {
   const [userData, setUserData] = useState(null);
@@ -56,12 +58,16 @@ const App = () => {
             <Route path="voucher" element={<ListVoucher />} />
           </Route>
 
-          <Route path="/id/:id" element={ isAuthenticated ? <ProductOrder/> : <Navigate to="/login"/>}/>
+          <Route path="/id/:id" element={ isAuthenticated ? <ProductOrder userData={userData}/> : <Navigate to="/login"/>}/>
 
           <Route
             path="/check-order/"
             element={isAuthenticated ? <CheckOrder /> : <Navigate to="/login" />}
-          />
+          >
+          </Route>
+
+          <Route path="/waiting-payment/:id" element={ isAuthenticated ? <ProcessingPayment userData={userData}/> : <Navigate to="/login"/>}/>
+          <Route path="/confirmation-payment/:id" element={ isAuthenticated ? <ConfirmationPayment userData={userData}/> : <Navigate to="/login"/>}/>
 
           <Route
             path="/login"
