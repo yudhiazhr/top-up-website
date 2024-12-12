@@ -1,10 +1,10 @@
 import { collection, getDocs } from "firebase/firestore";
-import { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { db } from "../Firebase";
 
 export const AllContext = createContext();
 
- const ContextProvider = ({ children }) => {
+ const ContextProvider = React.memo(({ children }) => {
   const [dataProduct, setDataProduct] = useState([]);
 
   useEffect(() => {
@@ -22,13 +22,15 @@ export const AllContext = createContext();
     };
 
     fetchDataProduct();
+    
   }, []);
+  
 
   return (
     <AllContext.Provider value={{ dataProduct }}>
       {children}
     </AllContext.Provider>
   );
-};
+});
 
 export default ContextProvider;

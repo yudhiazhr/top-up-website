@@ -123,7 +123,7 @@ export const Navbar = ({ userData }) => {
             Login
           </Link>
           <Link
-            to={`/login`}
+            to={`/`}
             className="bg-yellow-600 hover:bg-yellow-500 py-2 px-5 rounded-xl duration-300 transition-all text-white"
           >
             Get Started

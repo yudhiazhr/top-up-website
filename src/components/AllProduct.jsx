@@ -1,8 +1,8 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { AllContext } from "../contexts/useContext";
 import { Link } from "react-router-dom";
 
-export const AllProduct = ({ style }) => {
+export const AllProduct = React.memo(({ style }) => {
   const { dataProduct } = useContext(AllContext);
 
   console.log(dataProduct);
@@ -107,4 +107,4 @@ export const AllProduct = ({ style }) => {
       {/* List Voucher end */}
     </div>
   );
-};
+});

@@ -12,12 +12,12 @@ import { ListGames } from "./components/ListGames";
 import { ListVoucher } from "./components/ListVoucher";
 import { Login } from "./auth/login";
 import { SignUp } from "./auth/SignUp";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ProductOrder } from "./pages/PlaceOrder";
 import { ProcessingPayment } from "./pages/ProcessingPayment";
 import { ConfirmationPayment } from "./pages/ConfirmationPayment";
 
-const App = () => {
+const App = React.memo(() => {
   const [userData, setUserData] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -79,6 +79,6 @@ const App = () => {
       </Router>
     </>
   );
-};
+});
 
 export default App;

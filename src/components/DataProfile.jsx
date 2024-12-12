@@ -1,8 +1,16 @@
-import { useState } from "react";
-import { updateDoc, doc } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import {
+  updateDoc,
+  doc,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { db, auth } from "../Firebase";
 import {
   EmailAuthProvider,
+  getAuth,
   reauthenticateWithCredential,
   updatePassword,
 } from "firebase/auth";
@@ -15,6 +23,38 @@ export const DataProfile = ({ userData }) => {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [orderData, setOrderData] = useState([]);
+
+  const auth = getAuth();
+  const userUid = auth.currentUser?.uid;
+
+  useEffect(() => {
+    const fetchOrderData = async () => {
+      if (!userUid) {
+        setError("User is not logged in.");
+        return;
+      }
+
+      try {
+        const orderCollection = collection(db, "order");
+        const q = query(orderCollection, where("uid", "==", userUid));
+        const orderSnapshot = await getDocs(q);
+        const orders = orderSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setOrderData(orders);
+        console.log(orders);
+      } catch (error) {
+        console.error("Error fetching orders: ", error);
+        setError("Failed to fetch order data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrderData();
+  }, [userUid]);
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
@@ -99,29 +139,49 @@ export const DataProfile = ({ userData }) => {
       {/* Total Success */}
       <div className="flex flex-col justify-center gap-6 w-full h-[166px] bg-[#2b2b2b] rounded-lg py-5 px-8 ">
         <h1>Total Belanja Sukses</h1>
-        <p className="text-4xl font-bold">Rp. 1.516</p>
+        <p className="text-4xl font-bold">
+          {new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+          }).format(
+            orderData
+              .filter((order) => order.status === "Sukses")
+              .reduce((total, order) => total + order.product["total price"], 0)
+          )}
+        </p>
       </div>
 
       {/* Total order detail */}
       <div className="grid grid-cols-4 py-5 px-8 w-full h-[144px] bg-[#2b2b2b] rounded-lg ">
         <div className="flex flex-col gap-6 justify-center">
           <h1>Total Pesanan</h1>
-          <p className="text-4xl font-bold">1</p>
+          <p className="text-4xl font-bold">{orderData.length}</p>
         </div>
 
         <div className="flex flex-col gap-6 justify-center">
           <h1>Belum Bayar</h1>
-          <p className="text-4xl font-bold">0</p>
+          <p className="text-4xl font-bold">
+            {orderData.filter((order) => order.status === "Belum Bayar").length}
+          </p>
         </div>
 
         <div className="flex flex-col gap-6 justify-center">
           <h1>Pending</h1>
-          <p className="text-4xl font-bold">0</p>
+          <p className="text-4xl font-bold">
+            {
+              orderData.filter((order) => order.status === "Sedang Proses")
+                .length
+            }
+          </p>
         </div>
 
         <div className="flex flex-col gap-6 justify-center">
           <h1>Sukses</h1>
-          <p className="text-4xl font-bold">1</p>
+          <p className="text-4xl font-bold">
+            {orderData.filter((order) => order.status === "Sukses").length}
+          </p>
         </div>
       </div>
 

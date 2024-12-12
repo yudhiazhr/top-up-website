@@ -17,6 +17,17 @@ export const ProductOrder = ({ userData }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState({
+    topUp: false,
+    exampleDiamond: false,
+    weeklyDiamond: false,
+    originalServer: false,
+    important: false,
+    qris: false,
+    eWallet: false,
+    mBanking: false,
+    convinienceStore: false,
+  });
 
   const handleAddOrder = async () => {
     if (!userID || !zoneID || !selectedItem) {
@@ -40,7 +51,7 @@ export const ProductOrder = ({ userData }) => {
         name: product.name,
         image: product.image,
         ["selected item"]: selectedItem.name,
-        ["total quantity"]: selectedItem.quantity + selectedItem.bonus || "-",
+        ["total quantity"]: selectedItem.quantity + selectedItem.bonus || "",
         ["total price"]: selectedItem?.price * 0.1 + selectedItem?.price,
       },
       paymentMethod,
@@ -70,6 +81,13 @@ export const ProductOrder = ({ userData }) => {
       </section>
     );
   }
+
+  const toggleDropdown = (section) => {
+    setIsOpen((prevState) => ({
+      ...prevState,
+      [section]: !prevState[section],
+    }));
+  };
 
   return (
     <div className="flex flex-col min-h-dvh w-full pt-32 text-white px-[300px] ">
@@ -177,7 +195,7 @@ export const ProductOrder = ({ userData }) => {
                       : "bg-[#363636]"
                   } p-4 items-center rounded-lg`}
                 >
-                  <div className="flex flex-col h-full items-start text-start justify-between">
+                  <div className="flex flex-col h-full  items-start text-start justify-between">
                     <h1 className=" font-bold text-lg ">{item.name}</h1>
                     <p
                       className={`font-bold text-lg ${
@@ -197,7 +215,7 @@ export const ProductOrder = ({ userData }) => {
 
                   <img
                     src={`${item.image}`}
-                    className="w-16 h-16 object-cover "
+                    className=" right-0 w-16 h-16 object-cover "
                     alt=""
                   />
                 </button>
@@ -260,7 +278,12 @@ export const ProductOrder = ({ userData }) => {
 
             {/* QRIS */}
             <div className="flex flex-col">
-              <div className="flex justify-between items-center bg-[#535353] rounded-t-xl p-4">
+              <div
+                onClick={() => toggleDropdown("qris")}
+                className={`trigger flex justify-between items-center bg-[#535353] ${
+                  isOpen.qris ? "rounded-t-xl" : "rounded-xl"
+                } duration-300 transition-all p-4 cursor-pointer`}
+              >
                 <h1>QRIS</h1>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -269,7 +292,9 @@ export const ProductOrder = ({ userData }) => {
                   height="24"
                   color="#000000"
                   fill="none"
-                  className="text-white size-5"
+                  className={`text-white size-5 ${
+                    isOpen.qris ? "rotate-0" : "rotate-180"
+                  } duration-300 transition-all`}
                 >
                   <path
                     d="M17.9998 15C17.9998 15 13.5809 9.00001 11.9998 9C10.4187 8.99999 5.99985 15 5.99985 15"
@@ -281,59 +306,74 @@ export const ProductOrder = ({ userData }) => {
                 </svg>
               </div>
 
-              <div
-                className="flex border-x border-b border-[#535353] rounded-b-xl p-4"
-                onClick={() =>
-                  setPaymentMethod(paymentMethod === "QRIS" ? "" : "QRIS")
-                }
-              >
-                <div className="relative flex flex-col p-4 w-full rounded-lg bg-white text-black overflow-hidden">
-                  {paymentMethod === "QRIS" && (
-                    <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#000000"
-                        fill="none"
-                        className="text-white rotate-[135deg] size-8"
-                      >
-                        <path
-                          d="M5 14L8.5 17.5L19 6.5"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                  <div className="w-20">
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Logo_QRIS.svg/1200px-Logo_QRIS.svg.png"
-                      className="w-full object-cover"
-                      alt="QRIS Logo"
-                    />
-                  </div>
-                  <h1 className="font-bold text-xl py-4 border-b">
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    }).format(
-                      selectedItem?.price * 0.1 + selectedItem?.price || 0
+              {isOpen.qris ? (
+                <div
+                  className={`flex border-x border-b border-[#535353] rounded-b-xl ${
+                    isOpen.qris
+                      ? "max-h-[500px] opacity-100"
+                      : "max-h-0 opacity-0 "
+                  }  p-4 transition-all duration-300`}
+                >
+                  <div
+                    className="relative flex flex-col p-4 w-full rounded-lg bg-white text-black overflow-hidden cursor-pointer"
+                    onClick={() =>
+                      setPaymentMethod(paymentMethod === "QRIS" ? "" : "QRIS")
+                    }
+                  >
+                    {paymentMethod === "QRIS" && (
+                      <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          color="#000000"
+                          fill="none"
+                          className="text-white rotate-[135deg] size-8"
+                        >
+                          <path
+                            d="M5 14L8.5 17.5L19 6.5"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
                     )}
-                  </h1>
-                  <p className="pt-3 text-gray-400">QRIS</p>
+                    <div className="w-20">
+                      <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Logo_QRIS.svg/1200px-Logo_QRIS.svg.png"
+                        className="w-full object-cover"
+                        alt="QRIS Logo"
+                      />
+                    </div>
+                    <h1 className="font-bold text-xl py-4 border-b">
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(
+                        selectedItem?.price * 0.1 + selectedItem?.price || 0
+                      )}
+                    </h1>
+                    <p className="pt-3 text-gray-400">QRIS</p>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                ""
+              )}
             </div>
 
             {/* E-Wallet */}
             <div className="flex flex-col">
-              <div className="flex justify-between items-center bg-[#535353] rounded-t-xl p-4">
+              <div
+                onClick={() => toggleDropdown("eWallet")}
+                className={`trigger flex justify-between items-center bg-[#535353] ${
+                  isOpen.eWallet ? "rounded-t-xl" : "rounded-xl"
+                } duration-300 transition-all p-4 cursor-pointer`}
+              >
                 <h1>E-Wallet</h1>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -342,7 +382,9 @@ export const ProductOrder = ({ userData }) => {
                   height="24"
                   color="#000000"
                   fill="none"
-                  className="text-white size-5"
+                  className={`text-white size-5 ${
+                    isOpen.eWallet ? "rotate-0" : "rotate-180"
+                  } duration-300 transition-all`}
                 >
                   <path
                     d="M17.9998 15C17.9998 15 13.5809 9.00001 11.9998 9C10.4187 8.99999 5.99985 15 5.99985 15"
@@ -354,206 +396,221 @@ export const ProductOrder = ({ userData }) => {
                 </svg>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 border-x border-b border-[#535353] rounded-b-xl p-4">
-                {/* Gopay */}
+              {isOpen.eWallet ? (
                 <div
-                  className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
-                  onClick={() =>
-                    setPaymentMethod(paymentMethod === "Gopay" ? "" : "Gopay")
-                  }
+                  className={`grid grid-cols-3 gap-4 border-x border-b border-[#535353] rounded-b-xl p-4 ${
+                    isOpen.eWallet
+                      ? "max-h-[500px] opacity-100"
+                      : "max-h-0 opacity-0 "
+                  }  p-4 transition-all duration-300`}
                 >
-                  {paymentMethod === "Gopay" && (
-                    <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#000000"
-                        fill="none"
-                        className="text-white rotate-[135deg] size-8"
-                      >
-                        <path
-                          d="M5 14L8.5 17.5L19 6.5"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                  <div className="w-[74px] h-[24px]">
-                    <img
-                      src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgNkYCbXFJSEYn6Sr4ACJQffqAZ1CGVYzbbBmZCMHbWfT4hpu1WVCK7po71tAxQbqhbyjPMcOpS3fHKPMZFFib78LDuxkeFkZQav64iN1pteAUxN7aFUUWcY5JXvnP3lKWux3DPpigyLcP0aSQaPQAR8a5lsLXx3tzIV88HW0pmeoTzVVaF0_Zznw/w400-h131/Logo%20GoPay%20%20-%20%20(Koleksilogo.com).png"
-                      className="w-full object-cover"
-                      alt=""
-                    />
-                  </div>
-                  <h1 className="font-bold text-xl py-4 border-b">
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    }).format(
-                      selectedItem?.price * 0.1 + selectedItem?.price || 0
+                  {/* Gopay */}
+                  <div
+                    className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
+                    onClick={() =>
+                      setPaymentMethod(paymentMethod === "Gopay" ? "" : "Gopay")
+                    }
+                  >
+                    {paymentMethod === "Gopay" && (
+                      <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          color="#000000"
+                          fill="none"
+                          className="text-white rotate-[135deg] size-8"
+                        >
+                          <path
+                            d="M5 14L8.5 17.5L19 6.5"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
                     )}
-                  </h1>
-                  <p className="pt-3 text-gray-400">Gopay</p>
-                </div>
+                    <div className="w-[74px] h-[24px]">
+                      <img
+                        src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgNkYCbXFJSEYn6Sr4ACJQffqAZ1CGVYzbbBmZCMHbWfT4hpu1WVCK7po71tAxQbqhbyjPMcOpS3fHKPMZFFib78LDuxkeFkZQav64iN1pteAUxN7aFUUWcY5JXvnP3lKWux3DPpigyLcP0aSQaPQAR8a5lsLXx3tzIV88HW0pmeoTzVVaF0_Zznw/w400-h131/Logo%20GoPay%20%20-%20%20(Koleksilogo.com).png"
+                        className="w-full object-cover"
+                        alt=""
+                      />
+                    </div>
+                    <h1 className="font-bold text-xl py-4 border-b">
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(
+                        selectedItem?.price * 0.1 + selectedItem?.price || 0
+                      )}
+                    </h1>
+                    <p className="pt-3 text-gray-400">Gopay</p>
+                  </div>
 
-                {/* Dana */}
-                <div
-                  className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
-                  onClick={() =>
-                    setPaymentMethod(paymentMethod === "Dana" ? "" : "Dana")
-                  }
-                >
-                  {paymentMethod === "Dana" && (
-                    <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#000000"
-                        fill="none"
-                        className="text-white rotate-[135deg] size-8"
-                      >
-                        <path
-                          d="M5 14L8.5 17.5L19 6.5"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                  <div className="w-[74px] h-[24px]">
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Logo_dana_blue.svg/2560px-Logo_dana_blue.svg.png"
-                      className="w-full object-cover"
-                      alt=""
-                    />
-                  </div>
-                  <h1 className="font-bold text-xl py-4 border-b">
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    }).format(
-                      selectedItem?.price * 0.1 + selectedItem?.price || 0
+                  {/* Dana */}
+                  <div
+                    className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
+                    onClick={() =>
+                      setPaymentMethod(paymentMethod === "Dana" ? "" : "Dana")
+                    }
+                  >
+                    {paymentMethod === "Dana" && (
+                      <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          color="#000000"
+                          fill="none"
+                          className="text-white rotate-[135deg] size-8"
+                        >
+                          <path
+                            d="M5 14L8.5 17.5L19 6.5"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
                     )}
-                  </h1>
-                  <p className="pt-3 text-gray-400">Dana</p>
-                </div>
+                    <div className="w-[74px] h-[24px]">
+                      <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Logo_dana_blue.svg/2560px-Logo_dana_blue.svg.png"
+                        className="w-full object-cover"
+                        alt=""
+                      />
+                    </div>
+                    <h1 className="font-bold text-xl py-4 border-b">
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(
+                        selectedItem?.price * 0.1 + selectedItem?.price || 0
+                      )}
+                    </h1>
+                    <p className="pt-3 text-gray-400">Dana</p>
+                  </div>
 
-                {/* Ovo */}
-                <div
-                  className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
-                  onClick={() =>
-                    setPaymentMethod(paymentMethod === "OVO" ? "" : "OVO")
-                  }
-                >
-                  {paymentMethod === "OVO" && (
-                    <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#000000"
-                        fill="none"
-                        className="text-white rotate-[135deg] size-8"
-                      >
-                        <path
-                          d="M5 14L8.5 17.5L19 6.5"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                  <div className="w-[74px] h-[24px]">
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Logo_ovo_purple.svg/2560px-Logo_ovo_purple.svg.png"
-                      className="w-full object-cover"
-                      alt=""
-                    />
-                  </div>
-                  <h1 className="font-bold text-xl py-4 border-b">
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    }).format(
-                      selectedItem?.price * 0.1 + selectedItem?.price || 0
+                  {/* Ovo */}
+                  <div
+                    className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
+                    onClick={() =>
+                      setPaymentMethod(paymentMethod === "OVO" ? "" : "OVO")
+                    }
+                  >
+                    {paymentMethod === "OVO" && (
+                      <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          color="#000000"
+                          fill="none"
+                          className="text-white rotate-[135deg] size-8"
+                        >
+                          <path
+                            d="M5 14L8.5 17.5L19 6.5"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
                     )}
-                  </h1>
-                  <p className="pt-3 text-gray-400">OVO</p>
-                </div>
+                    <div className="w-[74px] h-[24px]">
+                      <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Logo_ovo_purple.svg/2560px-Logo_ovo_purple.svg.png"
+                        className="w-full object-cover"
+                        alt=""
+                      />
+                    </div>
+                    <h1 className="font-bold text-xl py-4 border-b">
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(
+                        selectedItem?.price * 0.1 + selectedItem?.price || 0
+                      )}
+                    </h1>
+                    <p className="pt-3 text-gray-400">OVO</p>
+                  </div>
 
-                {/* Link Aja */}
-                <div
-                  className="relative flex flex-col col-span-3 p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
-                  onClick={() =>
-                    setPaymentMethod(
-                      paymentMethod === "LinkAja" ? "" : "LinkAja"
-                    )
-                  }
-                >
-                  {paymentMethod === "LinkAja" && (
-                    <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#000000"
-                        fill="none"
-                        className="text-white rotate-[135deg] size-8"
-                      >
-                        <path
-                          d="M5 14L8.5 17.5L19 6.5"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                  <div className="w-8">
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/LinkAja.svg/480px-LinkAja.svg.png"
-                      className="w-full object-cover"
-                      alt=""
-                    />
-                  </div>
-                  <h1 className="font-bold text-xl py-4 border-b">
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    }).format(
-                      selectedItem?.price * 0.1 + selectedItem?.price || 0
+                  {/* Link Aja */}
+                  <div
+                    className="relative flex flex-col col-span-3 p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
+                    onClick={() =>
+                      setPaymentMethod(
+                        paymentMethod === "LinkAja" ? "" : "LinkAja"
+                      )
+                    }
+                  >
+                    {paymentMethod === "LinkAja" && (
+                      <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          color="#000000"
+                          fill="none"
+                          className="text-white rotate-[135deg] size-8"
+                        >
+                          <path
+                            d="M5 14L8.5 17.5L19 6.5"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
                     )}
-                  </h1>
-                  <p className="pt-3 text-gray-400">Link Aja</p>
+                    <div className="w-8">
+                      <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/LinkAja.svg/480px-LinkAja.svg.png"
+                        className="w-full object-cover"
+                        alt=""
+                      />
+                    </div>
+                    <h1 className="font-bold text-xl py-4 border-b">
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(
+                        selectedItem?.price * 0.1 + selectedItem?.price || 0
+                      )}
+                    </h1>
+                    <p className="pt-3 text-gray-400">Link Aja</p>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                ""
+              )}
             </div>
 
             {/* M-Banking */}
             <div className="flex flex-col">
-              <div className="flex justify-between items-center bg-[#535353] rounded-t-xl p-4">
+              <div
+                onClick={() => toggleDropdown("mBanking")}
+                className={`trigger flex justify-between items-center bg-[#535353] ${
+                  isOpen.mBanking ? "rounded-t-xl" : "rounded-xl"
+                } duration-300 transition-all p-4 cursor-pointer`}
+              >
                 <h1>M-Banking</h1>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -562,7 +619,9 @@ export const ProductOrder = ({ userData }) => {
                   height="24"
                   color="#000000"
                   fill="none"
-                  className="text-white size-5"
+                  className={`text-white size-5 ${
+                    isOpen.mBanking ? "rotate-0" : "rotate-180"
+                  } duration-300 transition-all`}
                 >
                   <path
                     d="M17.9998 15C17.9998 15 13.5809 9.00001 11.9998 9C10.4187 8.99999 5.99985 15 5.99985 15"
@@ -574,310 +633,335 @@ export const ProductOrder = ({ userData }) => {
                 </svg>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 border-x border-b border-[#535353] rounded-b-xl p-4">
-                {/* BCA */}
+              {isOpen.mBanking ? (
                 <div
-                  className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
-                  onClick={() =>
-                    setPaymentMethod(paymentMethod === "BCA VA" ? "" : "BCA VA")
-                  }
+                  className={`grid grid-cols-3 gap-4 border-x border-b border-[#535353] rounded-b-xl p-4 ${
+                    isOpen.mBanking
+                      ? "max-h-[500px] opacity-100"
+                      : "max-h-0 opacity-0 "
+                  }  p-4 transition-all duration-300`}
                 >
-                  {paymentMethod === "BCA VA" && (
-                    <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#000000"
-                        fill="none"
-                        className="text-white rotate-[135deg] size-8"
-                      >
-                        <path
-                          d="M5 14L8.5 17.5L19 6.5"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                  <div className="w-[74px] h-[24px]">
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg"
-                      className="w-full object-cover "
-                      alt=""
-                    />
-                  </div>
-                  <h1 className=" font-bold text-xl py-4 border-b">
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    }).format(
-                      selectedItem?.price * 0.1 + selectedItem?.price || 0
+                  {/* BCA */}
+                  <div
+                    className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
+                    onClick={() =>
+                      setPaymentMethod(
+                        paymentMethod === "BCA VA" ? "" : "BCA VA"
+                      )
+                    }
+                  >
+                    {paymentMethod === "BCA VA" && (
+                      <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          color="#000000"
+                          fill="none"
+                          className="text-white rotate-[135deg] size-8"
+                        >
+                          <path
+                            d="M5 14L8.5 17.5L19 6.5"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
                     )}
-                  </h1>
-                  <p className="pt-3 text-gray-400">BCA Virtual Account</p>
-                </div>
+                    <div className="w-[74px] h-[24px]">
+                      <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg"
+                        className="w-full object-cover "
+                        alt=""
+                      />
+                    </div>
+                    <h1 className=" font-bold text-xl py-4 border-b">
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(
+                        selectedItem?.price * 0.1 + selectedItem?.price || 0
+                      )}
+                    </h1>
+                    <p className="pt-3 text-gray-400">BCA Virtual Account</p>
+                  </div>
 
-                {/* MAYBANK */}
-                <div
-                  className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
-                  onClick={() =>
-                    setPaymentMethod(
-                      paymentMethod === "Maybank VA" ? "" : "Maybank VA"
-                    )
-                  }
-                >
-                  {paymentMethod === "Maybank VA" && (
-                    <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#000000"
-                        fill="none"
-                        className="text-white rotate-[135deg] size-8"
-                      >
-                        <path
-                          d="M5 14L8.5 17.5L19 6.5"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                  <div className=" w-[74px] h-[24px]">
-                    <img
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2yBN_VHcNN8lWfcdiulPdPCDzg_i-bb1U2g&s"
-                      className="w-full object-cover "
-                      alt=""
-                    />
-                  </div>
-                  <h1 className=" font-bold text-xl py-4 border-b">
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    }).format(
-                      selectedItem?.price * 0.1 + selectedItem?.price || 0
+                  {/* MAYBANK */}
+                  <div
+                    className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
+                    onClick={() =>
+                      setPaymentMethod(
+                        paymentMethod === "Maybank VA" ? "" : "Maybank VA"
+                      )
+                    }
+                  >
+                    {paymentMethod === "Maybank VA" && (
+                      <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          color="#000000"
+                          fill="none"
+                          className="text-white rotate-[135deg] size-8"
+                        >
+                          <path
+                            d="M5 14L8.5 17.5L19 6.5"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
                     )}
-                  </h1>
-                  <p className="pt-3 text-gray-400">Maybank Virtual Account</p>
-                </div>
+                    <div className=" w-[74px] h-[24px]">
+                      <img
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2yBN_VHcNN8lWfcdiulPdPCDzg_i-bb1U2g&s"
+                        className="w-full object-cover "
+                        alt=""
+                      />
+                    </div>
+                    <h1 className=" font-bold text-xl py-4 border-b">
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(
+                        selectedItem?.price * 0.1 + selectedItem?.price || 0
+                      )}
+                    </h1>
+                    <p className="pt-3 text-gray-400">
+                      Maybank Virtual Account
+                    </p>
+                  </div>
 
-                {/* BNI */}
-                <div
-                  className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
-                  onClick={() =>
-                    setPaymentMethod(paymentMethod === "BNI VA" ? "" : "BNI VA")
-                  }
-                >
-                  {paymentMethod === "BNI VA" && (
-                    <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#000000"
-                        fill="none"
-                        className="text-white rotate-[135deg] size-8"
-                      >
-                        <path
-                          d="M5 14L8.5 17.5L19 6.5"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                  <div className="w-[74px] h-[24px]">
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/id/thumb/5/55/BNI_logo.svg/2560px-BNI_logo.svg.png"
-                      className="w-full object-cover "
-                      alt=""
-                    />
-                  </div>
-                  <h1 className=" font-bold text-xl py-4 border-b">
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    }).format(
-                      selectedItem?.price * 0.1 + selectedItem?.price || 0
+                  {/* BNI */}
+                  <div
+                    className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
+                    onClick={() =>
+                      setPaymentMethod(
+                        paymentMethod === "BNI VA" ? "" : "BNI VA"
+                      )
+                    }
+                  >
+                    {paymentMethod === "BNI VA" && (
+                      <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          color="#000000"
+                          fill="none"
+                          className="text-white rotate-[135deg] size-8"
+                        >
+                          <path
+                            d="M5 14L8.5 17.5L19 6.5"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
                     )}
-                  </h1>
-                  <p className="pt-3 text-gray-400">BNI Virtual Account</p>
-                </div>
+                    <div className="w-[74px] h-[24px]">
+                      <img
+                        src="https://upload.wikimedia.org/wikipedia/id/thumb/5/55/BNI_logo.svg/2560px-BNI_logo.svg.png"
+                        className="w-full object-cover "
+                        alt=""
+                      />
+                    </div>
+                    <h1 className=" font-bold text-xl py-4 border-b">
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(
+                        selectedItem?.price * 0.1 + selectedItem?.price || 0
+                      )}
+                    </h1>
+                    <p className="pt-3 text-gray-400">BNI Virtual Account</p>
+                  </div>
 
-                {/* BRI */}
-                <div
-                  className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
-                  onClick={() =>
-                    setPaymentMethod(paymentMethod === "BRI VA" ? "" : "BRI VA")
-                  }
-                >
-                  {paymentMethod === "BRI VA" && (
-                    <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#000000"
-                        fill="none"
-                        className="text-white rotate-[135deg] size-8"
-                      >
-                        <path
-                          d="M5 14L8.5 17.5L19 6.5"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                  <div className="w-[74px] h-[24px]">
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Logo_BRI.png/1200px-Logo_BRI.png"
-                      className="w-full object-cover "
-                      alt=""
-                    />
-                  </div>
-                  <h1 className=" font-bold text-xl py-4 border-b">
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    }).format(
-                      selectedItem?.price * 0.1 + selectedItem?.price || 0
+                  {/* BRI */}
+                  <div
+                    className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
+                    onClick={() =>
+                      setPaymentMethod(
+                        paymentMethod === "BRI VA" ? "" : "BRI VA"
+                      )
+                    }
+                  >
+                    {paymentMethod === "BRI VA" && (
+                      <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          color="#000000"
+                          fill="none"
+                          className="text-white rotate-[135deg] size-8"
+                        >
+                          <path
+                            d="M5 14L8.5 17.5L19 6.5"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
                     )}
-                  </h1>
-                  <p className="pt-3 text-gray-400">BRI Virtual Account</p>
-                </div>
+                    <div className="w-[74px] h-[24px]">
+                      <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Logo_BRI.png/1200px-Logo_BRI.png"
+                        className="w-full object-cover "
+                        alt=""
+                      />
+                    </div>
+                    <h1 className=" font-bold text-xl py-4 border-b">
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(
+                        selectedItem?.price * 0.1 + selectedItem?.price || 0
+                      )}
+                    </h1>
+                    <p className="pt-3 text-gray-400">BRI Virtual Account</p>
+                  </div>
 
-                {/* MANDIRI */}
-                <div
-                  className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
-                  onClick={() =>
-                    setPaymentMethod(
-                      paymentMethod === "Mandiri VA" ? "" : "Mandiri VA"
-                    )
-                  }
-                >
-                  {paymentMethod === "Mandiri VA" && (
-                    <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#000000"
-                        fill="none"
-                        className="text-white rotate-[135deg] size-8"
-                      >
-                        <path
-                          d="M5 14L8.5 17.5L19 6.5"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                  <div className="w-[74px] h-[24px]">
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/2560px-Bank_Mandiri_logo_2016.svg.png"
-                      className="w-full object-cover "
-                      alt=""
-                    />
-                  </div>
-                  <h1 className=" font-bold text-xl py-4 border-b">
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    }).format(
-                      selectedItem?.price * 0.1 + selectedItem?.price || 0
+                  {/* MANDIRI */}
+                  <div
+                    className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
+                    onClick={() =>
+                      setPaymentMethod(
+                        paymentMethod === "Mandiri VA" ? "" : "Mandiri VA"
+                      )
+                    }
+                  >
+                    {paymentMethod === "Mandiri VA" && (
+                      <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          color="#000000"
+                          fill="none"
+                          className="text-white rotate-[135deg] size-8"
+                        >
+                          <path
+                            d="M5 14L8.5 17.5L19 6.5"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
                     )}
-                  </h1>
-                  <p className="pt-3 text-gray-400">Mandiri Virtual Account</p>
-                </div>
+                    <div className="w-[74px] h-[24px]">
+                      <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/2560px-Bank_Mandiri_logo_2016.svg.png"
+                        className="w-full object-cover "
+                        alt=""
+                      />
+                    </div>
+                    <h1 className=" font-bold text-xl py-4 border-b">
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(
+                        selectedItem?.price * 0.1 + selectedItem?.price || 0
+                      )}
+                    </h1>
+                    <p className="pt-3 text-gray-400">
+                      Mandiri Virtual Account
+                    </p>
+                  </div>
 
-                {/* PERMATA */}
-                <div
-                  className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
-                  onClick={() =>
-                    setPaymentMethod(
-                      paymentMethod === "Permata Bank VA"
-                        ? ""
-                        : "Permata Bank VA"
-                    )
-                  }
-                >
-                  {paymentMethod === "Permata Bank VA" && (
-                    <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#000000"
-                        fill="none"
-                        className="text-white rotate-[135deg] size-8"
-                      >
-                        <path
-                          d="M5 14L8.5 17.5L19 6.5"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                  <div className="w-[74px] h-[24px]">
-                    <img
-                      src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgYRXRn-ok9aV3B9zGFZqp3DpWXOtLu4Pf_3ErDOUhxEDQaLeHBTIbzJM_gbQ44XFXA2pEXv4yZek05MHHi0RsoQm_RIWJcgNqqpAr_fc3qP-PpgGnK5Tn7plQbNxwyPvaLW8YNwsfqjTcVm_htDWCHvi83bP2tOc4bZl9HaqU3rlzTc2GPcNu5wA/w640-h160/Bank%20Permata%20-koleksilogo.com.png"
-                      className="w-full object-cover "
-                      alt=""
-                    />
-                  </div>
-                  <h1 className=" font-bold text-xl py-4 border-b">
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    }).format(
-                      selectedItem?.price * 0.1 + selectedItem?.price || 0
+                  {/* PERMATA */}
+                  <div
+                    className="relative flex flex-col p-4 w-full justify-between rounded-lg bg-white text-black overflow-hidden"
+                    onClick={() =>
+                      setPaymentMethod(
+                        paymentMethod === "Permata Bank VA"
+                          ? ""
+                          : "Permata Bank VA"
+                      )
+                    }
+                  >
+                    {paymentMethod === "Permata Bank VA" && (
+                      <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          color="#000000"
+                          fill="none"
+                          className="text-white rotate-[135deg] size-8"
+                        >
+                          <path
+                            d="M5 14L8.5 17.5L19 6.5"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
                     )}
-                  </h1>
-                  <p className="pt-3 text-gray-400">
-                    Permata Bank Virtual Account
-                  </p>
+                    <div className="w-[74px] h-[24px]">
+                      <img
+                        src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgYRXRn-ok9aV3B9zGFZqp3DpWXOtLu4Pf_3ErDOUhxEDQaLeHBTIbzJM_gbQ44XFXA2pEXv4yZek05MHHi0RsoQm_RIWJcgNqqpAr_fc3qP-PpgGnK5Tn7plQbNxwyPvaLW8YNwsfqjTcVm_htDWCHvi83bP2tOc4bZl9HaqU3rlzTc2GPcNu5wA/w640-h160/Bank%20Permata%20-koleksilogo.com.png"
+                        className="w-full object-cover "
+                        alt=""
+                      />
+                    </div>
+                    <h1 className=" font-bold text-xl py-4 border-b">
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(
+                        selectedItem?.price * 0.1 + selectedItem?.price || 0
+                      )}
+                    </h1>
+                    <p className="pt-3 text-gray-400">
+                      Permata Bank Virtual Account
+                    </p>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                ""
+              )}
             </div>
 
             {/* Convinience Store */}
             <div className="flex flex-col">
-              <div className="flex justify-between items-center bg-[#535353] rounded-t-xl p-4">
+              <div
+                onClick={() => toggleDropdown("convinienceStore")}
+                className={`trigger flex justify-between items-center bg-[#535353] ${
+                  isOpen.convinienceStore ? "rounded-t-xl" : "rounded-xl"
+                } duration-300 transition-all p-4 cursor-pointer`}
+              >
                 <h1>Convinience Store</h1>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -886,7 +970,9 @@ export const ProductOrder = ({ userData }) => {
                   height="24"
                   color="#000000"
                   fill="none"
-                  className="text-white size-5"
+                  className={`text-white size-5 ${
+                    isOpen.convinienceStore ? "rotate-0" : "rotate-180"
+                  } duration-300 transition-all`}
                 >
                   <path
                     d="M17.9998 15C17.9998 15 13.5809 9.00001 11.9998 9C10.4187 8.99999 5.99985 15 5.99985 15"
@@ -897,56 +983,66 @@ export const ProductOrder = ({ userData }) => {
                   />
                 </svg>
               </div>
-              <div
-                className="flex border-x border-b border-[#535353] rounded-b-xl p-4"
-                onClick={() =>
-                  setPaymentMethod(
-                    paymentMethod === "Alfamart" ? "" : "Alfamart"
-                  )
-                }
-              >
-                <div className="relative flex flex-col p-4  w-full rounded-lg bg-white text-black overflow-hidden">
-                  {paymentMethod === "Alfamart" && (
-                    <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#000000"
-                        fill="none"
-                        className="text-white rotate-[135deg] size-8"
-                      >
-                        <path
-                          d="M5 14L8.5 17.5L19 6.5"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                  <div className="w-20">
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/ALFAMART_LOGO_BARU.png/1200px-ALFAMART_LOGO_BARU.png"
-                      className="w-full object-cover "
-                      alt=""
-                    />
-                  </div>
-                  <h1 className=" font-bold text-xl py-4 border-b">
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    }).format(
-                      selectedItem?.price * 0.1 + selectedItem?.price || 0
+              {isOpen.convinienceStore ? (
+                <div
+                  className={`flex border-x border-b border-[#535353] rounded-b-xl ${
+                    isOpen.convinienceStore
+                      ? "max-h-[500px] opacity-100"
+                      : "max-h-0 opacity-0 "
+                  }  p-4 transition-all duration-300`}
+                >
+                  <div
+                    className="relative flex flex-col p-4  w-full rounded-lg bg-white text-black overflow-hidden"
+                    onClick={() =>
+                      setPaymentMethod(
+                        paymentMethod === "Alfamart" ? "" : "Alfamart"
+                      )
+                    }
+                  >
+                    {paymentMethod === "Alfamart" && (
+                      <div className="absolute flex justify-center right-[-75px] top-[-75px] pt-1 w-32 h-32 bg-yellow-600 rotate-[225deg]">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          color="#000000"
+                          fill="none"
+                          className="text-white rotate-[135deg] size-8"
+                        >
+                          <path
+                            d="M5 14L8.5 17.5L19 6.5"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
                     )}
-                  </h1>
-                  <p className="pt-3 text-gray-400">Alfamart</p>
+                    <div className="w-20">
+                      <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/ALFAMART_LOGO_BARU.png/1200px-ALFAMART_LOGO_BARU.png"
+                        className="w-full object-cover "
+                        alt=""
+                      />
+                    </div>
+                    <h1 className=" font-bold text-xl py-4 border-b">
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(
+                        selectedItem?.price * 0.1 + selectedItem?.price || 0
+                      )}
+                    </h1>
+                    <p className="pt-3 text-gray-400">Alfamart</p>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                ""
+              )}
             </div>
           </div>
 
@@ -983,7 +1079,10 @@ export const ProductOrder = ({ userData }) => {
               <label htmlFor="">No. Whatsapp</label>
               <input
                 type="text"
-                placeholder="Masukkan No. Whatsapp"
+                placeholder={`${
+                  userData["phone number"] || "Masukkan No. Whatsapp"
+                }`}
+                value={userData["phone number"]}
                 required
                 className="p-3 bg-[#212121] rounded-lg "
               />
@@ -993,10 +1092,15 @@ export const ProductOrder = ({ userData }) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-8 w-full ">
-          {/* How to top up */}
-          <div className="flex flex-col">
-            <div className="flex justify-between items-center bg-[#535353] rounded-t-xl p-4">
+        <div className={`flex flex-col gap-4 w-full `}>
+          {/* Hot Top Up */}
+          <div className="flex flex-col ">
+            <div
+              onClick={() => toggleDropdown("topUp")}
+              className={`trigger flex justify-between items-center bg-[#535353] ${
+                isOpen.topUp ? "rounded-t-xl" : "rounded-xl"
+              } duration-300 transition-all p-4 cursor-pointer`}
+            >
               <h1>Cara Top Up</h1>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1005,7 +1109,9 @@ export const ProductOrder = ({ userData }) => {
                 height="24"
                 color="#000000"
                 fill="none"
-                className="text-white size-5"
+                className={`text-white size-5 ${
+                  isOpen.topUp ? "rotate-0" : "rotate-180"
+                } duration-300 transition-all`}
               >
                 <path
                   d="M17.9998 15C17.9998 15 13.5809 9.00001 11.9998 9C10.4187 8.99999 5.99985 15 5.99985 15"
@@ -1016,11 +1122,15 @@ export const ProductOrder = ({ userData }) => {
                 />
               </svg>
             </div>
-            <div className="flex flex-col justify-between bg-[#2b2b2b] rounded-b-xl p-4">
+            <div
+              className={`flex flex-col justify-between bg-[#2b2b2b] rounded-b-xl p-4 overflow-hidden transition-all duration-300 ${
+                isOpen.topUp ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+              }`}
+            >
               <ol className="list-decimal pl-6">
                 <li>
-                  Masukkan User ID dan Zone ID Anda, Contoh, User ID : 667632423
-                  Zone ID : 5246
+                  Masukkan User ID dan Zone ID Anda, Contoh, User ID: 667632423
+                  Zone ID: 5246
                 </li>
                 <li>Pilih Nominal Diamonds yang kamu inginkan</li>
                 <li>Tulis nomor WhatsApp yg benar!</li>
@@ -1030,9 +1140,14 @@ export const ProductOrder = ({ userData }) => {
             </div>
           </div>
 
-          {/* Example receive diamond or something */}
+          {/* About Diamond */}
           <div className="flex flex-col">
-            <div className="flex justify-between items-center bg-[#535353] rounded-t-xl p-4">
+            <div
+              onClick={() => toggleDropdown("exampleDiamond")}
+              className={`trigger flex justify-between items-center bg-[#535353] ${
+                isOpen.exampleDiamond ? "rounded-t-xl" : "rounded-xl"
+              } duration-300 transition-all p-4 cursor-pointer`}
+            >
               <h1>Contoh Diamond Yang Masuk</h1>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1041,7 +1156,9 @@ export const ProductOrder = ({ userData }) => {
                 height="24"
                 color="#000000"
                 fill="none"
-                className="text-white size-5"
+                className={`text-white size-5 ${
+                  isOpen.exampleDiamond ? "rotate-0" : "rotate-180"
+                } duration-300 transition-all`}
               >
                 <path
                   d="M17.9998 15C17.9998 15 13.5809 9.00001 11.9998 9C10.4187 8.99999 5.99985 15 5.99985 15"
@@ -1052,17 +1169,28 @@ export const ProductOrder = ({ userData }) => {
                 />
               </svg>
             </div>
-            <div className="flex flex-col justify-between bg-[#2b2b2b] rounded-b-xl p-4">
+            <div
+              className={`flex flex-col justify-between bg-[#2b2b2b] rounded-b-xl p-4 overflow-hidden transition-all duration-300 ${
+                isOpen.exampleDiamond
+                  ? "max-h-[500px] opacity-100"
+                  : "max-h-0 opacity-0"
+              }`}
+            >
               <h1>
                 Jika kamu order 110 (100 + 10 diamond). Maka diamond yang akan
-                kamu dapat total 110 Diamond.
+                kamu dapat total 110 Diamond.
               </h1>
             </div>
           </div>
 
-          {/* About */}
+          {/* Weekly Diamond Pass */}
           <div className="flex flex-col">
-            <div className="flex justify-between items-center bg-[#535353] rounded-t-xl p-4">
+            <div
+              onClick={() => toggleDropdown("weeklyDiamond")}
+              className={`trigger flex justify-between items-center bg-[#535353] ${
+                isOpen.weeklyDiamond ? "rounded-t-xl" : "rounded-xl"
+              } duration-300 transition-all p-4 cursor-pointer`}
+            >
               <h1>Tentang Weekly Diamond Pass</h1>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1071,7 +1199,9 @@ export const ProductOrder = ({ userData }) => {
                 height="24"
                 color="#000000"
                 fill="none"
-                className="text-white size-5"
+                className={`text-white size-5 ${
+                  isOpen.weeklyDiamond ? "rotate-0" : "rotate-180"
+                } duration-300 transition-all`}
               >
                 <path
                   d="M17.9998 15C17.9998 15 13.5809 9.00001 11.9998 9C10.4187 8.99999 5.99985 15 5.99985 15"
@@ -1082,21 +1212,24 @@ export const ProductOrder = ({ userData }) => {
                 />
               </svg>
             </div>
-            <div className="flex flex-col justify-between bg-[#2b2b2b] rounded-b-xl p-4">
-              <ol
-                className="list-decimal pl-6"
-                style={{ listStyleType: "disc" }}
-              >
+            <div
+              className={`flex flex-col justify-between bg-[#2b2b2b] rounded-b-xl p-4 overflow-hidden transition-all duration-300 ${
+                isOpen.weeklyDiamond
+                  ? "max-h-[500px] opacity-100"
+                  : "max-h-0 opacity-0"
+              }`}
+            >
+              <ol className="list-decimal pl-6">
                 <li>
-                  Pastikan Level Akun Mobile Legends kamu sudah mencapai level 5
+                  Pastikan Level Akun Mobile Legends kamu sudah mencapai level 5
                 </li>
                 <li>
-                  Pastikan kamu Top Up di Original Server (Bukan Advanced
+                  Pastikan kamu Top Up di Original Server (Bukan Advanced
                   Server)
                 </li>
                 <li>
-                  Kamu tidak bisa Top Up Weekly Diamond jika sudah 0/10 (70
-                  Hari) kalian bisa check di bagian weekly diamond masing masing
+                  Kamu tidak bisa Top Up Weekly Diamond jika sudah 0/10 (70
+                  Hari) kalian bisa check di bagian weekly diamond masing masing
                   akun
                 </li>
                 <li>
@@ -1106,9 +1239,14 @@ export const ProductOrder = ({ userData }) => {
             </div>
           </div>
 
-          {/* Top up Original Server */}
+          {/* Top Up Original Server */}
           <div className="flex flex-col">
-            <div className="flex justify-between items-center bg-[#535353] rounded-t-xl p-4">
+            <div
+              onClick={() => toggleDropdown("originalServer")}
+              className={`trigger flex justify-between items-center bg-[#535353] ${
+                isOpen.originalServer ? "rounded-t-xl" : "rounded-xl"
+              } duration-300 transition-all p-4 cursor-pointer`}
+            >
               <h1>Top Up Original Server</h1>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1117,7 +1255,9 @@ export const ProductOrder = ({ userData }) => {
                 height="24"
                 color="#000000"
                 fill="none"
-                className="text-white size-5"
+                className={`text-white size-5 ${
+                  isOpen.originalServer ? "rotate-0" : "rotate-180"
+                } duration-300 transition-all`}
               >
                 <path
                   d="M17.9998 15C17.9998 15 13.5809 9.00001 11.9998 9C10.4187 8.99999 5.99985 15 5.99985 15"
@@ -1128,7 +1268,13 @@ export const ProductOrder = ({ userData }) => {
                 />
               </svg>
             </div>
-            <div className="flex flex-col justify-between bg-[#2b2b2b] rounded-b-xl p-4">
+            <div
+              className={`flex flex-col justify-between bg-[#2b2b2b] rounded-b-xl p-4 overflow-hidden transition-all duration-300 ${
+                isOpen.originalServer
+                  ? "max-h-[500px] opacity-100"
+                  : "max-h-0 opacity-0"
+              }`}
+            >
               <h1>
                 Hanya bisa untuk top up original server, tidak bisa untuk
                 advance server
@@ -1138,7 +1284,12 @@ export const ProductOrder = ({ userData }) => {
 
           {/* Urgent! */}
           <div className="flex flex-col">
-            <div className="flex justify-between items-center bg-[#535353] rounded-t-xl p-4">
+            <div
+              onClick={() => toggleDropdown("important")}
+              className={`trigger flex justify-between items-center bg-[#535353] ${
+                isOpen.important ? "rounded-t-xl" : "rounded-xl"
+              } duration-300 transition-all p-4 cursor-pointer`}
+            >
               <h1>PENTING!</h1>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1147,7 +1298,9 @@ export const ProductOrder = ({ userData }) => {
                 height="24"
                 color="#000000"
                 fill="none"
-                className="text-white size-5"
+                className={`text-white size-5 ${
+                  isOpen.important ? "rotate-0" : "rotate-180"
+                } duration-300 transition-all`}
               >
                 <path
                   d="M17.9998 15C17.9998 15 13.5809 9.00001 11.9998 9C10.4187 8.99999 5.99985 15 5.99985 15"
@@ -1158,7 +1311,13 @@ export const ProductOrder = ({ userData }) => {
                 />
               </svg>
             </div>
-            <div className="flex flex-col justify-between bg-[#2b2b2b] rounded-b-xl p-4">
+            <div
+              className={`flex flex-col justify-between bg-[#2b2b2b] rounded-b-xl p-4 overflow-hidden transition-all duration-300 ${
+                isOpen.important
+                  ? "max-h-[500px] opacity-100"
+                  : "max-h-0 opacity-0"
+              }`}
+            >
               <h1>
                 Pastikan limit Weekly Diamond Pass kamu tersedia. Jika terkena
                 limit, proses maksimal 5 hari kerja. 1x WDP dapat 80 diamond

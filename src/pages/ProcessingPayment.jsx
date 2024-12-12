@@ -8,7 +8,7 @@ export const ProcessingPayment = () => {
   const { id } = useParams();
   const [orderData, setOrderData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [countdown, setCountdown] = useState(10);
+  const [countdown, setCountdown] = useState(180);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,6 +19,7 @@ export const ProcessingPayment = () => {
 
         if (docSnap.exists()) {
           setOrderData(docSnap.data());
+          setCountdown(docSnap.data().countdown || 180);
         } else {
           console.error("No such document!");
         }
@@ -32,37 +33,36 @@ export const ProcessingPayment = () => {
     fetchOrder();
   }, [id]);
 
+  useEffect(() => {
+    const updateCountdownInFirestore = async () => {
+      if (
+        orderData &&
+        orderData.status !== "Sukses" &&
+        orderData.status !== "Dibatalkan"
+      ) {
+        try {
+          const docRef = doc(db, "order", id);
+          await updateDoc(docRef, { countdown });
+        } catch (error) {
+          console.error("Error updating countdown in Firestore: ", error);
+        }
+      }
+    };
 
-  console.log(orderData)
+    if (countdown !== 180) {
+      updateCountdownInFirestore();
+    }
+  }, [countdown, id]);
 
   useEffect(() => {
-    const storedCountdown = localStorage.getItem("countdown");
-    if (storedCountdown) {
-      setCountdown(parseInt(storedCountdown, 10));
-      setCountdown(10)
-    }
-  }, []);
-
-  useEffect(() => {
-    if (orderData?.status === "Sukses") {
+    if (orderData?.status === "Sukses" || orderData?.status === "Dibatalkan") {
       setCountdown(0);
-      localStorage.removeItem("countdown");
-      return;
-    }
-
-    if (orderData?.status === "Dibatalkan") {
-      setCountdown(0);
-      localStorage.removeItem("countdown");
       return;
     }
 
     if (countdown > 0) {
       const timer = setInterval(() => {
-        setCountdown((prev) => {
-          const newCountdown = prev - 1;
-          localStorage.setItem("countdown", newCountdown);
-          return newCountdown;
-        });
+        setCountdown((prev) => prev - 1);
       }, 1000);
 
       return () => clearInterval(timer);
@@ -71,12 +71,12 @@ export const ProcessingPayment = () => {
     }
   }, [countdown, orderData]);
 
-
   const handleCancelOrder = async () => {
     try {
       const docRef = doc(db, "order", id);
-      await updateDoc(docRef, { status: "Dibatalkan" });
+      await updateDoc(docRef, { status: "Dibatalkan", countdown: 0 });
       setOrderData((prev) => ({ ...prev, status: "Dibatalkan" }));
+      setCountdown(0);
     } catch (error) {
       console.error("Error updating order status: ", error);
     }
@@ -85,7 +85,7 @@ export const ProcessingPayment = () => {
   const handleQRScan = async () => {
     try {
       const docRef = doc(db, "order", id);
-      await updateDoc(docRef, { status: "Sedang Proses" });
+      await updateDoc(docRef, { status: "Sedang Proses", countdown });
       setOrderData((prev) => ({ ...prev, status: "Sedang Proses" }));
       navigate(`/confirmation-payment/${id}`);
     } catch (error) {
@@ -110,6 +110,8 @@ export const ProcessingPayment = () => {
   if (!orderData) {
     return <div className="text-white">No order found with the given ID.</div>;
   }
+
+  console.log(orderData);
 
   return (
     <div className="flex flex-col px-[300px] py-32 text-white">
@@ -199,9 +201,6 @@ export const ProcessingPayment = () => {
               <div className=" grid grid-cols-2 mt-4  ">
                 <div className="flex flex-col gap-4 text-center justify-center items-center ">
                   <h1 className="">SCAN QR CODE dibawah ini</h1>
-
-                  <button onClick={handleQRScan}>proses</button>
-
                   {orderData.status === "Belum Bayar" && countdown > 0 ? (
                     <QRCode
                       value={``}
@@ -297,5 +296,3 @@ export const ProcessingPayment = () => {
     </div>
   );
 };
-
-

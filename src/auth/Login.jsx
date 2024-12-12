@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
@@ -9,7 +9,19 @@ export const Login = ({ setUserData }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("email");
+    const storedPassword = localStorage.getItem("password");
+
+    if (storedEmail && storedPassword) {
+      setEmail(storedEmail);
+      setPassword(storedPassword);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -32,6 +44,14 @@ export const Login = ({ setUserData }) => {
         console.log("Fetched User Data:", userData);
 
         localStorage.setItem("userData", JSON.stringify(userData));
+
+        if (rememberMe) {
+          localStorage.setItem("email", email);
+          localStorage.setItem("password", password);
+        } else {
+          localStorage.removeItem("email");
+          localStorage.removeItem("password");
+        }
 
         setUserData(userData);
         await navigate("/");
@@ -85,7 +105,12 @@ export const Login = ({ setUserData }) => {
 
             <div className="flex w-full justify-between">
               <div className="flex gap-3">
-                <input type="checkbox" id="remember" />
+                <input
+                  type="checkbox"
+                  id="remember"
+                  checked={rememberMe}
+                  onChange={() => setRememberMe(!rememberMe)}
+                />
                 <label htmlFor="remember">Ingat saya</label>
               </div>
 
