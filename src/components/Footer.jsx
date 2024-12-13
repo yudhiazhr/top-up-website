@@ -3,8 +3,8 @@ import logo from "../assets/imgs/logo.png";
 export const Footer = () => {
   return (
     <div className="flex flex-col gap-16 py-14 text-white bg-[#2b2b2b] px-[300px]">
-      <div className="flex gap-24">
-        <div className="flex flex-col gap-6 w-1/2 ">
+      <div className="flex justify-between">
+        <div className="flex flex-col gap-6 w-1/2">
           <img src={logo} className=" w-44 h-12" alt="" />
           <h1>
             Nikmati layanan top up game online instan di RRQ TOPUP. Dapatkan
@@ -38,7 +38,7 @@ export const Footer = () => {
           </p>
         </div>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 min-w-2">
           <h1>Peta Situs</h1>
           <ul>
             <li>
@@ -56,7 +56,7 @@ export const Footer = () => {
           </ul>
         </div>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 min-w-2">
           <h1>Top Up Lainnya</h1>
           <ul>
             <li>
@@ -74,7 +74,7 @@ export const Footer = () => {
           </ul>
         </div>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 min-w-2">
           <h1>Media Sosial</h1>
           <div className="flex gap-3">
             <a href="" className="p-2 rounded-full bg-white text-black">

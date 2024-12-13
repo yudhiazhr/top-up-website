@@ -288,7 +288,7 @@ export const ProcessingPayment = () => {
 
             <div className="flex flex-col w-[256px] flex-wrap">
               <h1 className="text-sm">Keterangan/No Token/No Voucher</h1>
-              <p className="text-2xl font-bold "> -</p>
+              <p className="text-2xl font-bold "> - </p>
             </div>
           </div>
         </div>

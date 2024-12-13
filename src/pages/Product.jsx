@@ -1,7 +1,14 @@
+import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 export const Product = () => {
   const location = useLocation();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selected, setSelected] = useState("suitable");
+
+  const handleCheckboxChange = (key) => {
+    setSelected(key);
+  };
 
   const isActive = (path) => location.pathname === path;
 
@@ -81,14 +88,74 @@ export const Product = () => {
             </div>
           </form>
 
-          <div className="flex gap-4 items-center">
-            <h1 className="text-base ">Urutkan Berdasarkan</h1>
-            <a
-              href=""
-              className="flex justify-center items-cennter px-5 py-2 bg-[#2b2b2b] rounded-lg"
+          <div className="relative flex gap-4 items-center">
+            <h1 className="text-base">Urutkan Berdasarkan</h1>
+            <div
+              className="flex justify-between items-center min-w-44 gap-5 px-5 py-2 bg-[#2b2b2b] rounded-lg cursor-pointer"
+              onClick={() => setIsDropdownOpen((prev) => !prev)} // Toggle dropdown visibility
             >
-              Paling Sesuai
-            </a>
+              <h1>
+                {selected === "popular"
+                  ? "Paling Populer"
+                  : selected === "suitable"
+                  ? "Paling Sesuai"
+                  : "Sesuai Abjad A-Z"}
+              </h1>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                color="#000000"
+                fill="none"
+                className={`text-white size-5 transition-all duration-300 ${
+                  isDropdownOpen ? "rotate-180" : ""
+                }`}
+              >
+                <path
+                  d="M17.9998 15C17.9998 15 13.5809 9.00001 11.9998 9C10.4187 8.99999 5.99985 15 5.99985 15"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+
+            {isDropdownOpen && (
+              <div className="absolute flex flex-col justify-between bg-[#2b2b2b] w-44 min-h-32 right-0 top-12 rounded-lg z-10">
+                <div className="flex gap-3 p-3">
+                  <input
+                    type="checkbox"
+                    id="popular"
+                    className=" accent-yellow-700  "
+                    checked={selected === "popular"}
+                    onChange={() => handleCheckboxChange("popular")}
+                  />
+                  <label htmlFor="popular">Paling Populer</label>
+                </div>
+                <div className="flex gap-3 p-3">
+                  <input
+                    type="checkbox"
+                    id="suitable"
+                    className=" accent-yellow-700  "
+                    checked={selected === "suitable"}
+                    onChange={() => handleCheckboxChange("suitable")}
+                  />
+                  <label htmlFor="suitable">Paling Sesuai</label>
+                </div>
+                <div className="flex gap-3 p-3">
+                  <input
+                    type="checkbox"
+                    id="alphabet"
+                    className=" accent-yellow-700"
+                    checked={selected === "alphabet"}
+                    onChange={() => handleCheckboxChange("alphabet")}
+                  />
+                  <label htmlFor="alphabet">Sesuai Abjad A-Z</label>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

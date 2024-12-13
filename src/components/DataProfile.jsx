@@ -11,6 +11,7 @@ import { db, auth } from "../Firebase";
 import {
   EmailAuthProvider,
   getAuth,
+  onAuthStateChanged,
   reauthenticateWithCredential,
   updatePassword,
 } from "firebase/auth";
@@ -24,9 +25,22 @@ export const DataProfile = ({ userData }) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [orderData, setOrderData] = useState([]);
+  const [uid, setUid] = useState(null);
 
   const auth = getAuth();
   const userUid = auth.currentUser?.uid;
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUid(user.uid);
+      } else {
+        setUid(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [auth]);
 
   useEffect(() => {
     const fetchOrderData = async () => {
@@ -53,7 +67,9 @@ export const DataProfile = ({ userData }) => {
       }
     };
 
-    fetchOrderData();
+    if (userUid) {
+      fetchOrderData();
+    }
   }, [userUid]);
 
   const handleProfileUpdate = async (e) => {
@@ -144,7 +160,7 @@ export const DataProfile = ({ userData }) => {
             style: "currency",
             currency: "IDR",
             minimumFractionDigits: 0,
-            maximumFractionDigits: 0
+            maximumFractionDigits: 0,
           }).format(
             orderData
               .filter((order) => order.status === "Sukses")

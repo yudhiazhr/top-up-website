@@ -4,12 +4,14 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import Bg from "../assets/imgs/Background.png";
 import { auth, db } from "../Firebase";
+import ReCAPTCHA from "react-google-recaptcha";
 
 export const Login = ({ setUserData }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [captchaVerified, setCaptchaVerified] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,15 +25,20 @@ export const Login = ({ setUserData }) => {
     }
   }, []);
 
+  const handleCaptchaChange = (value) => {
+    setCaptchaVerified(!!value);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    if (!captchaVerified) {
+      setError("Please verify that you are not a robot.");
+      return;
+    }
+
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
       console.log("Authenticated User:", user);
@@ -122,13 +129,15 @@ export const Login = ({ setUserData }) => {
               </Link>
             </div>
 
-            <div className="flex justify-center items-center bg-white rounded-xl text-black h-[74px]">
-              Captcha
-            </div>
+            <ReCAPTCHA
+              sitekey={import.meta.env.VITE_API_TOKEN_RECAPTCHA_V3}
+              onChange={handleCaptchaChange}
+            />
 
             <button
               type="submit"
               className="bg-yellow-600 hover:bg-yellow-500 h-12 rounded-xl duration-300 transition-all"
+              disabled={handleLogin}
             >
               Masuk
             </button>

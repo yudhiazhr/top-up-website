@@ -35,7 +35,7 @@ export const Home = () => {
       <div className="flex gap-8 h-[516px] items-center justify-between px-[300px]">
         <div
           id="indicators-carousel"
-          className="relative w-full flex flex-col justify-center items-center gap-7"
+          className="relative w-full flex flex-col justify-center items-center gap-3"
         >
           <div className="relative w-[896px] h-[406px] overflow-hidden rounded-lg">
             {banners.map((banner, index) => (

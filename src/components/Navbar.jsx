@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 
 export const Navbar = ({ userData }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -16,8 +17,24 @@ export const Navbar = ({ userData }) => {
 
   const isActive = (path) => location.pathname === path;
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <nav className="w-full h-24 flex gap-12 items-center justify-between fixed top-0 left-0 right-0 px-[300px]  bg-[#212121] z-50">
+    <nav
+      className={`w-full h-24 flex gap-12 items-center justify-between fixed top-0 left-0 right-0 px-[300px] z-50 transition-all duration-300 ${
+        isScrolled ? "bg-[#212121]/50 backdrop-blur-lg" : "bg-[#212121]"
+      }`}
+    >
       <div className="flex gap-12 items-center">
         <Link to={`/`}>
           <img src={logo} className="w-32 h-9" alt="Logo" />

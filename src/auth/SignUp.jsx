@@ -4,6 +4,7 @@ import { useState } from "react";
 import { setDoc, doc } from "firebase/firestore";
 import { auth, db } from "../Firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import ReCAPTCHA from "react-google-recaptcha";
 
 export const SignUp = () => {
   const [form, setForm] = useState({
@@ -15,6 +16,11 @@ export const SignUp = () => {
   });
 
   const [error, setError] = useState("");
+  const [captchaVerified, setCaptchaVerified] = useState(false);
+
+  const handleCaptchaChange = (value) => {
+    setCaptchaVerified(!!value);
+  };
 
   const handleInputChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -22,7 +28,18 @@ export const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { username, email, password, confirmPassword, "phone number": phoneNumber } = form;
+    const {
+      username,
+      email,
+      password,
+      confirmPassword,
+      "phone number": phoneNumber,
+    } = form;
+
+    if (!captchaVerified) {
+      setError("Please complete the reCAPTCHA verification.");
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match!");
@@ -30,7 +47,11 @@ export const SignUp = () => {
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
 
       const userDocRef = doc(db, "user", user.uid);
@@ -134,9 +155,10 @@ export const SignUp = () => {
               </div>
             </div>
 
-            <div className="flex justify-center items-center bg-white rounded-xl text-black h-[74px]">
-              Captcha
-            </div>
+            <ReCAPTCHA
+              sitekey={`${import.meta.env.VITE_API_TOKEN_RECAPTCHA_V3}`}
+              onChange={handleCaptchaChange}
+            />
 
             <button
               type="submit"
