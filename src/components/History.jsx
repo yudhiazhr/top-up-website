@@ -11,7 +11,9 @@ export const History = () => {
   const [uid, setUid] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-  const navigate = useNavigate()
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedDate, setSelectedDate] = useState(""); // State for selected date
+  const navigate = useNavigate();
 
   const auth = getAuth();
   const userUid = auth.currentUser?.uid;
@@ -59,7 +61,7 @@ export const History = () => {
 
   const formatDate = (timestamp) => {
     if (timestamp && timestamp.seconds) {
-      return new Date(timestamp.seconds * 1000).toLocaleString("id-ID", {
+      return new Date(timestamp.seconds * 1000).toLocaleString("en-GB", {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
@@ -80,12 +82,39 @@ export const History = () => {
     }).format(price);
   };
 
+  // Format tanggal ke YYYY-MM-DD
+  const formatDateToYYYYMMDD = (timestamp) => {
+    if (!timestamp) return "";
+
+    const date = new Date(timestamp.seconds * 1000); // timestamp Firestore dalam detik
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Bulan dihitung dari 0
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
   // Pagination logic
   const totalItems = orderData.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = orderData.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Perbaiki fungsi pencarian
+  const filteredOrders = currentItems.filter((order) => {
+    const matchesSearchQuery = order.product["selected item"]
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+
+    const orderDate = order.timestamp?.seconds
+      ? formatDateToYYYYMMDD(order.timestamp) // Menggunakan format YYYY-MM-DD untuk mencocokkan
+      : null;
+
+    const matchesDate = !selectedDate || orderDate === selectedDate; // Periksa jika tanggal sama
+
+    return matchesSearchQuery && matchesDate;
+  });
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -99,7 +128,7 @@ export const History = () => {
 
   const handleRowClick = (orderId) => {
     navigate(`/detail-order/${orderId}`);
-    return
+    return;
   };
 
   return (
@@ -133,25 +162,41 @@ export const History = () => {
                     />
                   </svg>
                 </div>
-                <input
-                  type="search"
-                  id="default-search"
-                  className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg  focus:ring-blue-500 focus:border-blue-500 dark:bg-[#414141] dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Cari sesuatu..."
-                  required
-                />
-                <button
-                  type="submit"
-                  className="text-white absolute end-2.5 bottom-2.5 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-4 py-2 bg-yellow-600 hover:bg-yellow-500 focus:ring-yellow-400 duration-300 transition-all"
-                >
-                  Search
-                </button>
+                <div className="flex w-full">
+                  <input
+                    type="search"
+                    id="default-search"
+                    className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-[#414141] dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Cari sesuatu..."
+                    required
+                    value={searchQuery}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setSearchQuery(value);
+                    }}
+                  />
+                </div>
               </div>
             </form>
-            <input
-              type="date"
-              className="w-[30%] px-3 bg-[#414141] rounded-lg"
-            />
+
+            <div className="relative flex w-[30%]">
+              <input
+                type="date"
+                className="w-full px-3 bg-[#414141] rounded-lg "
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+              />
+              {selectedDate && (
+                <button
+                  type="button"
+                  className="absolute right-12 top-1/2 transform -translate-y-1/2 text-white hover:text-[#9b9b9b]"
+                  onClick={() => setSelectedDate("")}
+                  aria-label="Clear date"
+                >
+                  X
+                </button>
+              )}
+            </div>
           </div>
 
           <table className="min-w-full table-auto text-white">
@@ -165,48 +210,56 @@ export const History = () => {
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((row) => (
-                <tr
-                  key={row.id}
-                  onClick={() => handleRowClick(row.id)}
-                  className="bg-[#2c2c2c] hover:bg-[#414141] cursor-pointer"
-                >
-                  <td className="px-4 py-2">{row["invoice id"]}</td>
-                  <td className="px-4 py-2">
-                    {`${row.product["total quantity"]} ${row.product["selected item"]}`}
-                  </td>
-                  <td className="px-4 py-2">{formatDate(row.timestamp)}</td>
-                  <td className="px-4 py-2">
-                    {formatPrice(row.product["total price"])}
-                  </td>
-                  <td className="px-4 py-2">
-                    <span
-                      className={`px-3 py-1 rounded-md min-w-32 max-w-44 flex justify-center text-sm ${
-                        row.status === "Dibatalkan"
-                          ? "bg-red-600"
-                          : row.status === "Belum Bayar"
-                          ? "bg-yellow-600"
-                          : row.status === "Sukses"
-                          ? "bg-green-600"
-                          : "bg-gray-400"
-                      }`}
-                    >
-                      {row.status}
-                    </span>
+              {filteredOrders.length > 0 ? (
+                filteredOrders.map((row) => (
+                  <tr
+                    key={row.id}
+                    onClick={() => handleRowClick(row.id)}
+                    className="bg-[#2c2c2c] hover:bg-[#414141] cursor-pointer"
+                  >
+                    <td className="px-4 py-2">{row["invoice id"]}</td>
+                    <td className="px-4 py-2">
+                      {`${row.product["total quantity"]} ${row.product["selected item"]}`}
+                    </td>
+                    <td className="px-4 py-2">{formatDate(row.timestamp)}</td>
+                    <td className="px-4 py-2">
+                      {formatPrice(row.product["total price"])}
+                    </td>
+                    <td className="px-4 py-2">
+                      <span
+                        className={`px-3 py-1 rounded-md min-w-32 max-w-44 flex justify-center text-sm ${
+                          row.status === "Dibatalkan"
+                            ? "bg-red-600"
+                            : row.status === "Belum Bayar"
+                            ? "bg-yellow-600"
+                            : row.status === "Sukses"
+                            ? "bg-green-600"
+                            : "bg-gray-400"
+                        }`}
+                      >
+                        {row.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="text-center px-4 py-2">
+                    No orders found.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
 
           {/* Pagination */}
           <div className="flex justify-between p-4 border-t-[1px] border-[#424242]">
             <h1 className="">{getShowingText()}</h1>
-            <div className="flex  items-center">
+            <div className="flex items-center">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-4 py-2 bg-[#414141] text-white rounded-l-lg "
+                className="px-4 py-2 bg-[#414141] text-white rounded-l-lg"
               >
                 {" "}
                 {`<`}
@@ -215,7 +268,7 @@ export const History = () => {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-[#414141] text-white rounded-r-lg "
+                className="px-4 py-2 bg-[#414141] text-white rounded-r-lg"
               >
                 {" "}
                 {`>`}

@@ -224,7 +224,7 @@ export const CheckOrder = () => {
                   <p className="text-2xl font-bold">
                     {new Date(
                       filteredOrder.timestamp.seconds * 1000
-                    ).toLocaleString()}
+                    ).toLocaleString("en-GB")}
                   </p>
                 </div>
                 <div className="flex flex-col">

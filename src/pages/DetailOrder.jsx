@@ -4,7 +4,6 @@ import { db } from "../Firebase";
 import { doc, getDoc } from "firebase/firestore";
 import logo from "../assets/imgs/logo.png";
 
-
 export const DetailOrder = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
@@ -128,9 +127,9 @@ export const DetailOrder = () => {
             <div className="flex flex-col">
               <h1 className="text-sm">Tanggal Pembelian</h1>
               <p className="text-2xl font-bold">
-                {new Date(
-                  order.timestamp.seconds * 1000
-                ).toLocaleString()}
+                {new Date(order.timestamp.seconds * 1000).toLocaleDateString(
+                  "en-GB"
+                )}
               </p>
             </div>
             <div className="flex flex-col">
@@ -156,9 +155,7 @@ export const DetailOrder = () => {
           <div className="flex flex-col gap-12">
             <div className="flex flex-col">
               <h1 className="text-sm">Metode Pembayaran</h1>
-              <p className="text-2xl font-bold">
-                {order.paymentMethod}
-              </p>
+              <p className="text-2xl font-bold">{order.paymentMethod}</p>
             </div>
 
             <div className="flex flex-col">
