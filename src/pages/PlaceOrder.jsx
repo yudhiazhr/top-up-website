@@ -7,9 +7,13 @@ import { addDoc, collection } from "firebase/firestore";
 
 export const ProductOrder = ({ userData }) => {
   const { id } = useParams();
-  const { dataProduct } = useContext(AllContext);
+  const { dataProduct, dataVoucher } = useContext(AllContext);
 
   const product = dataProduct.find((item) => item.id.toString() === id);
+  const voucher = dataVoucher.find((item) => item.id.toString() === id);
+
+  const itemsSource = product || voucher;
+  const isVoucher = itemsSource === voucher;
 
   const [userID, setUserID] = useState("");
   const [zoneID, setZoneID] = useState("");
@@ -52,13 +56,22 @@ export const ProductOrder = ({ userData }) => {
       },
       userID,
       zoneID,
-      product: {
-        name: product.name,
-        image: product.image,
-        ["selected item"]: selectedItem.name,
-        ["total quantity"]: selectedItem.quantity + selectedItem.bonus || "",
-        ["total price"]: selectedItem?.price * 0.1 + selectedItem?.price,
-      },
+      product: product
+        ? {
+            name: product.name,
+            image: product.image,
+            ["selected item"]: selectedItem.name,
+            ["total quantity"]:
+              selectedItem.quantity + selectedItem.bonus || "",
+            ["total price"]: selectedItem?.price * 0.1 + selectedItem?.price,
+          }
+        : {
+            name: voucher.name,
+            image: voucher.image,
+            ["selected item"]: selectedItem.name,
+            
+            ["total price"]: selectedItem?.price * 0.1 + selectedItem?.price,
+          },
       paymentMethod,
       timestamp: new Date(),
       status: "Belum Bayar",
@@ -79,7 +92,7 @@ export const ProductOrder = ({ userData }) => {
     }
   };
 
-  if (!product) {
+  if (!product && !voucher) {
     return (
       <section className="h-screen flex justify-center items-center">
         Loading...
@@ -99,8 +112,10 @@ export const ProductOrder = ({ userData }) => {
     const max = parseFloat(maxPrice) || Infinity;
 
     const allItems = [
-      ...product.items["special items"],
-      ...product.items["regular items"],
+      ...(product?.items?.["special items"] ||
+        voucher?.items?.["special items"]),
+      ...(product?.items?.["regular items"] ||
+        voucher?.items?.["regular items"]),
     ];
 
     const filtered = allItems.filter(
@@ -121,16 +136,18 @@ export const ProductOrder = ({ userData }) => {
       <div className="flex justify-between">
         <div className="flex gap-8 items-center w-[540px] py-12 ">
           <img
-            src={`${product.image}`}
+            src={`${product?.image || voucher?.image}`}
             className="w-[120px] h-[120px] rounded-2xl"
             alt=""
           />
-          <h1 className="text-4xl font-bold">{product.name}</h1>
+          <h1 className="text-4xl font-bold">
+            {product?.name || voucher?.name}
+          </h1>
         </div>
         <img src={Background2} alt="" />
       </div>
 
-      <div className=" pb-12 grid grid-cols-4 gap-8">
+      <div className=" py-12 grid grid-cols-4 gap-8">
         <div className=" col-span-3 flex flex-col gap-8 w-full">
           {/* Input ID in game */}
           <div className="bg-[#2b2b2b] rounded-2xl gap-8 p-8 flex flex-col justify-center-center">
@@ -173,7 +190,6 @@ export const ProductOrder = ({ userData }) => {
           {/* input and choose diamond or something else */}
           <div className="bg-[#2b2b2b] rounded-2xl gap-8 p-8 flex flex-col justify-center-center">
             <h1 className="text-2xl font-bold">Pilih Nominal Layanan</h1>
-
             <div className="grid grid-cols-5 gap-4 border-b border-[#535353] pb-8">
               <div className=" col-span-2 flex flex-col gap-3">
                 <label htmlFor="">Minimum Harga</label>
@@ -207,7 +223,7 @@ export const ProductOrder = ({ userData }) => {
               </button>
             </div>
 
-            {product.items["special items"].filter(
+            {itemsSource.items["special items"].filter(
               (item) =>
                 item.price >= (minPrice || 0) &&
                 item.price <= (maxPrice || Infinity)
@@ -215,7 +231,7 @@ export const ProductOrder = ({ userData }) => {
               <>
                 <h1 className="text-2xl font-bold">Special Items</h1>
                 <div className="grid grid-cols-3 gap-6">
-                  {product.items["special items"]
+                  {itemsSource.items["special items"]
                     .filter(
                       (item) =>
                         item.price >= (minPrice || 0) &&
@@ -266,74 +282,76 @@ export const ProductOrder = ({ userData }) => {
               </>
             )}
 
-            {product.items["regular items"].filter(
-              (item) =>
-                item.price >= (minPrice || 0) &&
-                item.price <= (maxPrice || Infinity)
-            ).length > 0 && (
-              <>
-                <h1 className="text-2xl font-bold">{product.items["regular items"][0].name}</h1>
-                <div className="grid grid-cols-3 gap-6">
-                  {product.items["regular items"]
-                    .filter(
-                      (item) =>
-                        item.price >= (minPrice || 0) &&
-                        item.price <= (maxPrice || Infinity)
-                    )
-                    .map((item, index) => (
-                      <button
-                        onClick={() => {
-                          if (selectedItem?.name === item.name) {
-                            setSelectedItem(null);
-                          } else {
-                            setSelectedItem(item);
-                          }
-                        }}
-                        key={index}
-                        className={`flex justify-between gap-8 min-h-[132px] ${
-                          selectedItem?.price === item.price
-                            ? "bg-yellow-600"
-                            : "bg-[#363636]"
-                        } p-4 items-center rounded-lg`}
-                      >
-                        <div className="flex flex-col h-full items-start text-start justify-between">
-                          <h1 className="font-bold text-lg">
-                            {`${item.quantity + item.bonus}`} {item.name} (
-                            {item.quantity} + {item.bonus} {item.name})
-                          </h1>
-                          <p
-                            className={`font-bold text-lg ${
-                              selectedItem?.price === item.price
-                                ? "text-white"
-                                : "text-yellow-500"
-                            }`}
-                          >
-                            {new Intl.NumberFormat("id-ID", {
-                              style: "currency",
-                              currency: "IDR",
-                              minimumFractionDigits: 0,
-                              maximumFractionDigits: 0,
-                            }).format(item.price)}
-                          </p>
-                        </div>
+            {!isVoucher &&
+              itemsSource.items["regular items"].filter(
+                (item) =>
+                  item.price >= (minPrice || 0) &&
+                  item.price <= (maxPrice || Infinity)
+              ).length > 0 && (
+                <>
+                  <h1 className="text-2xl font-bold">Regular Items</h1>
+                  <div className="grid grid-cols-3 gap-6">
+                    {itemsSource.items["regular items"]
+                      .filter(
+                        (item) =>
+                          item.price >= (minPrice || 0) &&
+                          item.price <= (maxPrice || Infinity)
+                      )
+                      .map((item, index) => (
+                        <button
+                          onClick={() => {
+                            if (selectedItem?.name === item.name) {
+                              setSelectedItem(null);
+                            } else {
+                              setSelectedItem(item);
+                            }
+                          }}
+                          key={index}
+                          className={`flex justify-between gap-8 min-h-[132px] ${
+                            selectedItem?.price === item.price
+                              ? "bg-yellow-600"
+                              : "bg-[#363636]"
+                          } p-4 items-center rounded-lg`}
+                        >
+                          <div className="flex flex-col h-full items-start text-start justify-between">
+                            <h1 className="font-bold text-lg">
+                              {`${item.quantity + item.bonus}`} {item.name} (
+                              {item.quantity} + {item.bonus} {item.name})
+                            </h1>
+                            <p
+                              className={`font-bold text-lg ${
+                                selectedItem?.price === item.price
+                                  ? "text-white"
+                                  : "text-yellow-500"
+                              }`}
+                            >
+                              {new Intl.NumberFormat("id-ID", {
+                                style: "currency",
+                                currency: "IDR",
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 0,
+                              }).format(item.price)}
+                            </p>
+                          </div>
 
-                        <img
-                          src={`${item.image}`}
-                          className="w-16 h-16 object-cover"
-                          alt=""
-                        />
-                      </button>
-                    ))}
-                </div>
-              </>
-            )}
+                          <img
+                            src={`${item.image}`}
+                            className="w-16 h-16 object-cover"
+                            alt=""
+                          />
+                        </button>
+                      ))}
+                  </div>
+                </>
+              )}
 
-            {product.items["special items"].filter(
+            {itemsSource.items["special items"].filter(
               (item) =>
                 item.price >= (minPrice || 0) &&
                 item.price <= (maxPrice || Infinity)
             ).length === 0 &&
-            product.items["regular items"].filter(
+            !isVoucher &&
+            itemsSource.items["regular items"].filter(
               (item) =>
                 item.price >= (minPrice || 0) &&
                 item.price <= (maxPrice || Infinity)
@@ -344,8 +362,8 @@ export const ProductOrder = ({ userData }) => {
                   filter untuk melihat banyak
                 </h1>
                 <img
-                  src={`${product.items["regular items"][0].image}`}
-                  className="w-32 h-32"
+                  src={`${itemsSource.items["regular items"][0]?.image || ""}`}
+                  className="w-32 h-32 object-cover"
                   alt=""
                 />
               </div>
@@ -1407,26 +1425,40 @@ export const ProductOrder = ({ userData }) => {
 
           {/* Detail Order */}
           <div className="flex flex-col gap-8">
-            <div className="flex flex-col gap-4 p-4 bg-[#2b2b2b] rounded-xl border border-dashed ">
+            <div className="flex flex-col gap-4 p-4 bg-[#2b2b2b] rounded-xl border border-dashed">
               <h1 className="font-medium">Detail Pembelian</h1>
               <div className="flex gap-4">
                 <img
-                  src={`${product.image}`}
+                  src={`${itemsSource.image}`}
                   className="w-14 h-14 rounded-xl"
                   alt=""
                 />
                 <h1 className="font-medium">
-                  {product.name} <br /> {product.items["special items"][0].name}
+                  {itemsSource.name} <br />
+                  {itemsSource.items["special items"][0]?.name || "-"}
                 </h1>
               </div>
-              <div className="flex justify-between">
-                <h1>{product.items["regular items"][0].name}</h1>
-                <p className="font-medium">
-                  {(selectedItem?.quantity + selectedItem?.bonus || "") +
-                    " " +
-                    (selectedItem?.name || "-")}
-                </p>
-              </div>
+
+              {isVoucher ? (
+                <div className="flex justify-between">
+                  <h1>Voucher</h1>
+                  <p className="font-medium">
+                    {(selectedItem?.quantity + selectedItem?.bonus || "") +
+                      " " +
+                      (selectedItem?.name || "-")}
+                  </p>
+                </div>
+              ) : (
+                <div className="flex justify-between">
+                  <h1>{product.items["regular items"][0].name}</h1>
+                  <p className="font-medium">
+                    {(selectedItem?.quantity + selectedItem?.bonus || "") +
+                      " " +
+                      (selectedItem?.name || "-")}
+                  </p>
+                </div>
+              )}
+
               <div className="flex justify-between">
                 <h1>Harga</h1>
                 <p className="font-medium">
@@ -1446,22 +1478,21 @@ export const ProductOrder = ({ userData }) => {
                     currency: "IDR",
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0,
-                  }).format(selectedItem?.price * 0.1 || 0)}
+                  }).format((selectedItem?.price || 0) * 0.1)}
                 </p>
               </div>
             </div>
+
             <div className="flex flex-col gap-4">
               <div className="flex justify-between">
-                <h1 className=" text-xl font-medium">Total</h1>
+                <h1 className="text-xl font-medium">Total</h1>
                 <p className="text-xl font-medium text-yellow-600">
                   {new Intl.NumberFormat("id-ID", {
                     style: "currency",
                     currency: "IDR",
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0,
-                  }).format(
-                    selectedItem?.price * 0.1 + selectedItem?.price || 0
-                  )}
+                  }).format((selectedItem?.price || 0) * 1.1)}
                 </p>
               </div>
               <button

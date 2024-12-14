@@ -12,7 +12,7 @@ export const History = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDate, setSelectedDate] = useState(""); // State for selected date
+  const [selectedDate, setSelectedDate] = useState("");
   const navigate = useNavigate();
 
   const auth = getAuth();
@@ -82,36 +82,33 @@ export const History = () => {
     }).format(price);
   };
 
-  // Format tanggal ke YYYY-MM-DD
   const formatDateToYYYYMMDD = (timestamp) => {
     if (!timestamp) return "";
 
-    const date = new Date(timestamp.seconds * 1000); // timestamp Firestore dalam detik
+    const date = new Date(timestamp.seconds * 1000);
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Bulan dihitung dari 0
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
   };
 
-  // Pagination logic
   const totalItems = orderData.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = orderData.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Perbaiki fungsi pencarian
   const filteredOrders = currentItems.filter((order) => {
     const matchesSearchQuery = order.product["selected item"]
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
 
     const orderDate = order.timestamp?.seconds
-      ? formatDateToYYYYMMDD(order.timestamp) // Menggunakan format YYYY-MM-DD untuk mencocokkan
+      ? formatDateToYYYYMMDD(order.timestamp)
       : null;
 
-    const matchesDate = !selectedDate || orderDate === selectedDate; // Periksa jika tanggal sama
+    const matchesDate = !selectedDate || orderDate === selectedDate;
 
     return matchesSearchQuery && matchesDate;
   });
@@ -219,7 +216,10 @@ export const History = () => {
                   >
                     <td className="px-4 py-2">{row["invoice id"]}</td>
                     <td className="px-4 py-2">
-                      {`${row.product["total quantity"]} ${row.product["selected item"]}`}
+                      {row.product["total quantity"] &&
+                      row.product["selected item"]
+                        ? `${row.product["total quantity"]} ${row.product["selected item"]}`
+                        : row.product["selected item"]}
                     </td>
                     <td className="px-4 py-2">{formatDate(row.timestamp)}</td>
                     <td className="px-4 py-2">

@@ -255,8 +255,9 @@ export const ProcessingPayment = () => {
             <div className="flex flex-col">
               <h1 className="text-sm">Item</h1>
               <p className="text-2xl font-bold">
-                {orderData.product["total quantity"]}{" "}
-                {orderData.product["selected item"]}
+              {orderData.product["total quantity"] && orderData.product["selected item"]
+                  ? (`${orderData.product["total quantity"]} ${orderData.product["selected item"]}`)
+                  : (`${orderData.product["selected item"]}`)}
               </p>
             </div>
             <div className="flex flex-col">

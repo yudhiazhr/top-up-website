@@ -4,8 +4,9 @@ import { db } from "../Firebase";
 
 export const AllContext = createContext();
 
- const ContextProvider = React.memo(({ children }) => {
+const ContextProvider = React.memo(({ children }) => {
   const [dataProduct, setDataProduct] = useState([]);
+  const [dataVoucher, setDataVoucher] = useState([]);
 
   useEffect(() => {
     const fetchDataProduct = async () => {
@@ -22,12 +23,25 @@ export const AllContext = createContext();
     };
 
     fetchDataProduct();
-    
+
+    const fetchDataVoucher = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "voucher"));
+        const fetchDataVoucher = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setDataVoucher(fetchDataVoucher);
+      } catch (error) {
+        console.error("Error fetching data voucher: ", error);
+      }
+    };
+
+    fetchDataVoucher();
   }, []);
-  
 
   return (
-    <AllContext.Provider value={{ dataProduct }}>
+    <AllContext.Provider value={{ dataProduct, dataVoucher }}>
       {children}
     </AllContext.Provider>
   );

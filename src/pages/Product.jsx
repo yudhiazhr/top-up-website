@@ -1,16 +1,46 @@
-import { useState } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { AllContext } from "../contexts/useContext";
 
 export const Product = () => {
+  const { dataProduct, dataVoucher } = useContext(AllContext);
   const location = useLocation();
+  const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selected, setSelected] = useState("suitable");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleCheckboxChange = (key) => {
     setSelected(key);
   };
 
   const isActive = (path) => location.pathname === path;
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    if (!searchQuery) {
+    e.preventDefault();
+      
+      navigate("/product");
+    } else {
+      const matchedProduct = dataProduct.find((product) =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+      const matchedVoucher = dataVoucher.find((voucher) =>
+        voucher.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+      if (matchedProduct) {
+        navigate(`/product/games?search=${searchQuery}`);
+      } else if (matchedVoucher) {
+        navigate(`/product/voucher?search=${searchQuery}`);
+      } else {
+        navigate(`/product?search=${searchQuery}`);
+      }
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-dvh w-full pt-36 text-white px-[300px]">
@@ -50,7 +80,7 @@ export const Product = () => {
         </div>
 
         <div className="flex justify-between items-center">
-          <form className=" w-[360px] ">
+          <form onSubmit={handleSearch} className="w-[360px]">
             <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">
               Search
             </label>
@@ -77,7 +107,8 @@ export const Product = () => {
                 id="default-search"
                 className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-[#2b2b2b] dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Cari sesuatu..."
-                required
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
               <button
                 type="submit"
@@ -128,7 +159,7 @@ export const Product = () => {
                   <input
                     type="checkbox"
                     id="popular"
-                    className=" accent-yellow-700  "
+                    className="accent-yellow-700"
                     checked={selected === "popular"}
                     onChange={() => handleCheckboxChange("popular")}
                   />
@@ -138,7 +169,7 @@ export const Product = () => {
                   <input
                     type="checkbox"
                     id="suitable"
-                    className=" accent-yellow-700  "
+                    className="accent-yellow-700"
                     checked={selected === "suitable"}
                     onChange={() => handleCheckboxChange("suitable")}
                   />
@@ -148,7 +179,7 @@ export const Product = () => {
                   <input
                     type="checkbox"
                     id="alphabet"
-                    className=" accent-yellow-700"
+                    className="accent-yellow-700"
                     checked={selected === "alphabet"}
                     onChange={() => handleCheckboxChange("alphabet")}
                   />
