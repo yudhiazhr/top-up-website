@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
+import CryptoJS from "crypto-js";
 import Bg from "../assets/imgs/Background.png";
 import { auth, db } from "../Firebase";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -16,12 +17,12 @@ export const Login = ({ setUserData }) => {
 
   useEffect(() => {
     const storedEmail = localStorage.getItem("email");
-    const storedPassword = localStorage.getItem("password");
+    const hashedPassword = localStorage.getItem("password");
 
-    if (storedEmail && storedPassword) {
+    if (storedEmail && hashedPassword) {
       setEmail(storedEmail);
-      setPassword(storedPassword);
       setRememberMe(true);
+
     }
   }, []);
 
@@ -41,20 +42,19 @@ export const Login = ({ setUserData }) => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      console.log("Authenticated User:", user);
 
       const userDocRef = doc(db, "user", user.uid);
       const userDocSnap = await getDoc(userDocRef);
 
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
-        console.log("Fetched User Data:", userData);
 
         localStorage.setItem("userData", JSON.stringify(userData));
 
         if (rememberMe) {
+          const hashedPassword = CryptoJS.SHA256(password).toString();
           localStorage.setItem("email", email);
-          localStorage.setItem("password", password);
+          localStorage.setItem("password", hashedPassword);
         } else {
           localStorage.removeItem("email");
           localStorage.removeItem("password");
@@ -64,7 +64,6 @@ export const Login = ({ setUserData }) => {
         await navigate("/");
         window.location.reload();
       } else {
-        console.log("No such user document found!");
         setError("User data not found. Please contact support.");
       }
     } catch (err) {
@@ -72,7 +71,7 @@ export const Login = ({ setUserData }) => {
       setError("Failed to log in. Please check your email and password.");
     }
   };
-
+  
   return (
     <div className="relative text-white">
       <img src={Bg} className="z-[-1] absolute w-full" alt="Background" />

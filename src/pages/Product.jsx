@@ -18,20 +18,15 @@ export const Product = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-
     if (!searchQuery) {
-    e.preventDefault();
-      
       navigate("/product");
     } else {
       const matchedProduct = dataProduct.find((product) =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
-
       const matchedVoucher = dataVoucher.find((voucher) =>
         voucher.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
-
       if (matchedProduct) {
         navigate(`/product/games?search=${searchQuery}`);
       } else if (matchedVoucher) {
@@ -81,30 +76,9 @@ export const Product = () => {
 
         <div className="flex justify-between items-center">
           <form onSubmit={handleSearch} className="w-[360px]">
-            <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">
-              Search
-            </label>
             <div className="relative">
-              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                <svg
-                  className="w-4 h-4 text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                  />
-                </svg>
-              </div>
               <input
                 type="search"
-                id="default-search"
                 className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-[#2b2b2b] dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Cari sesuatu..."
                 value={searchQuery}
@@ -112,7 +86,7 @@ export const Product = () => {
               />
               <button
                 type="submit"
-                className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-yellow-600 dark:hover:bg-yellow-500 dark:focus:ring-yellow-400 duration-300 transition-all"
+                className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-4 py-2 dark:bg-yellow-600 dark:hover:bg-yellow-500 duration-300 transition-all"
               >
                 Search
               </button>
@@ -123,7 +97,7 @@ export const Product = () => {
             <h1 className="text-base">Urutkan Berdasarkan</h1>
             <div
               className="flex justify-between items-center min-w-44 gap-5 px-5 py-2 bg-[#2b2b2b] rounded-lg cursor-pointer"
-              onClick={() => setIsDropdownOpen((prev) => !prev)} // Toggle dropdown visibility
+              onClick={() => setIsDropdownOpen((prev) => !prev)}
             >
               <h1>
                 {selected === "popular"
@@ -137,8 +111,6 @@ export const Product = () => {
                 viewBox="0 0 24 24"
                 width="24"
                 height="24"
-                color="#000000"
-                fill="none"
                 className={`text-white size-5 transition-all duration-300 ${
                   isDropdownOpen ? "rotate-180" : ""
                 }`}
@@ -159,7 +131,6 @@ export const Product = () => {
                   <input
                     type="checkbox"
                     id="popular"
-                    className="accent-yellow-700"
                     checked={selected === "popular"}
                     onChange={() => handleCheckboxChange("popular")}
                   />
@@ -169,7 +140,6 @@ export const Product = () => {
                   <input
                     type="checkbox"
                     id="suitable"
-                    className="accent-yellow-700"
                     checked={selected === "suitable"}
                     onChange={() => handleCheckboxChange("suitable")}
                   />
@@ -179,7 +149,6 @@ export const Product = () => {
                   <input
                     type="checkbox"
                     id="alphabet"
-                    className="accent-yellow-700"
                     checked={selected === "alphabet"}
                     onChange={() => handleCheckboxChange("alphabet")}
                   />
@@ -191,7 +160,7 @@ export const Product = () => {
         </div>
       </div>
 
-      <Outlet />
+      <Outlet context={{ selected }} />
     </div>
   );
 };

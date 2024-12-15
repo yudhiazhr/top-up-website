@@ -149,7 +149,6 @@ export const ProductOrder = ({ userData }) => {
 
       <div className=" py-12 grid grid-cols-4 gap-8">
         <div className=" col-span-3 flex flex-col gap-8 w-full">
-          {/* Input ID in game */}
           <div className="bg-[#2b2b2b] rounded-2xl gap-8 p-8 flex flex-col justify-center-center">
             <h1 className="text-2xl font-bold">Lengkapi Data</h1>
             <div className="w-full border-t border-[#535353] "></div>
@@ -187,7 +186,6 @@ export const ProductOrder = ({ userData }) => {
             </h1>
           </div>
 
-          {/* input and choose diamond or something else */}
           <div className="bg-[#2b2b2b] rounded-2xl gap-8 p-8 flex flex-col justify-center-center">
             <h1 className="text-2xl font-bold">Pilih Nominal Layanan</h1>
             <div className="grid grid-cols-5 gap-4 border-b border-[#535353] pb-8">
@@ -370,7 +368,6 @@ export const ProductOrder = ({ userData }) => {
             ) : null}
           </div>
 
-          {/* choose payment */}
           <div className="bg-[#2b2b2b] rounded-2xl gap-8 p-8 flex flex-col justify-center-center">
             <h1 className="text-2xl font-bold">Pilih Pembayaran</h1>
 
@@ -1144,7 +1141,6 @@ export const ProductOrder = ({ userData }) => {
             </div>
           </div>
 
-          {/* voucher code */}
           <div className="bg-[#2b2b2b] rounded-2xl gap-8 p-8 flex flex-col justify-center-center">
             <h1 className="text-2xl font-bold">Kode Voucher</h1>
             <div className="w-full border-t border-[#535353] "></div>
@@ -1168,7 +1164,6 @@ export const ProductOrder = ({ userData }) => {
             </div>
           </div>
 
-          {/* confirm order */}
           <div className="bg-[#2b2b2b] rounded-2xl gap-8 p-8 flex flex-col justify-center-center">
             <h1 className="text-2xl font-bold">Konfirmasi Pesanan</h1>
             <div className="w-full border-t border-[#535353] "></div>
@@ -1191,7 +1186,6 @@ export const ProductOrder = ({ userData }) => {
         </div>
 
         <div className={`flex flex-col gap-4 w-full `}>
-          {/* Hot Top Up */}
           <div className="flex flex-col ">
             <div
               onClick={() => toggleDropdown("topUp")}
@@ -1238,7 +1232,6 @@ export const ProductOrder = ({ userData }) => {
             </div>
           </div>
 
-          {/* About Diamond */}
           <div className="flex flex-col">
             <div
               onClick={() => toggleDropdown("exampleDiamond")}
@@ -1281,7 +1274,6 @@ export const ProductOrder = ({ userData }) => {
             </div>
           </div>
 
-          {/* Weekly Diamond Pass */}
           <div className="flex flex-col">
             <div
               onClick={() => toggleDropdown("weeklyDiamond")}
@@ -1337,7 +1329,6 @@ export const ProductOrder = ({ userData }) => {
             </div>
           </div>
 
-          {/* Top Up Original Server */}
           <div className="flex flex-col">
             <div
               onClick={() => toggleDropdown("originalServer")}
@@ -1380,7 +1371,6 @@ export const ProductOrder = ({ userData }) => {
             </div>
           </div>
 
-          {/* Urgent! */}
           <div className="flex flex-col">
             <div
               onClick={() => toggleDropdown("important")}
@@ -1423,7 +1413,6 @@ export const ProductOrder = ({ userData }) => {
             </div>
           </div>
 
-          {/* Detail Order */}
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-4 p-4 bg-[#2b2b2b] rounded-xl border border-dashed">
               <h1 className="font-medium">Detail Pembelian</h1>

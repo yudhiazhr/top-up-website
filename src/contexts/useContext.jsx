@@ -19,7 +19,7 @@ const ContextProvider = React.memo(({ children }) => {
         setDataProduct(fetchedDataProduct);
       } catch (error) {
         console.error("Error fetching data product: ", error);
-      }
+      } 
     };
 
     fetchDataProduct();

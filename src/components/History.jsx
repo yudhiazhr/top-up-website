@@ -219,7 +219,10 @@ export const History = () => {
                       {row.product["total quantity"] &&
                       row.product["selected item"]
                         ? `${row.product["total quantity"]} ${row.product["selected item"]}`
-                        : row.product["selected item"]}
+                        : <div div className="flex flex-col">
+                          <h2>{row.product.name}</h2> 
+                          <h1> {row.product["selected item"]}</h1>
+                          </div>}
                     </td>
                     <td className="px-4 py-2">{formatDate(row.timestamp)}</td>
                     <td className="px-4 py-2">
@@ -252,7 +255,6 @@ export const History = () => {
             </tbody>
           </table>
 
-          {/* Pagination */}
           <div className="flex justify-between p-4 border-t-[1px] border-[#424242]">
             <h1 className="">{getShowingText()}</h1>
             <div className="flex items-center">

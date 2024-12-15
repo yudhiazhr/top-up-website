@@ -81,7 +81,7 @@ const App = React.memo(() => {
           <Route path="/forgot-password/*" element={isAuthenticated ? <Navigate to="/" /> : <ForgotPassword />}/>
 
         </Routes>
-        <Footer />
+        <Footer userData={userData} />
       </Router>
     </>
   );

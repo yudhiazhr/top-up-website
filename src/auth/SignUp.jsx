@@ -5,6 +5,7 @@ import { setDoc, doc } from "firebase/firestore";
 import { auth, db } from "../Firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import ReCAPTCHA from "react-google-recaptcha";
+import CryptoJS from "crypto-js";
 
 export const SignUp = () => {
   const [form, setForm] = useState({
@@ -54,13 +55,15 @@ export const SignUp = () => {
       );
       const user = userCredential.user;
 
+      const hashedPassword = CryptoJS.SHA256(password).toString();
+
       const userDocRef = doc(db, "user", user.uid);
       await setDoc(userDocRef, {
         uid: user.uid,
         username: username,
         email: email,
         "phone number": phoneNumber,
-        password: password,
+        password: hashedPassword,
       });
 
       alert("Account created successfully!");

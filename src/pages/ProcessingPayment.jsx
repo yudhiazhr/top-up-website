@@ -111,7 +111,6 @@ export const ProcessingPayment = () => {
     return <div className="text-white">No order found with the given ID.</div>;
   }
 
-  console.log(orderData);
 
   return (
     <div className="flex flex-col px-[300px] py-32 text-white">
@@ -203,7 +202,7 @@ export const ProcessingPayment = () => {
                   <h1 className="">SCAN QR CODE dibawah ini</h1>
                   {orderData.status === "Belum Bayar" && countdown > 0 ? (
                     <QRCode
-                      value={``}
+                      value={`https://rrq-top-up.netlify.app/confirmation-payment/${id}`}
                       size={256}
                       fgColor="#000000"
                       className="p-6 bg-white rounded-lg"

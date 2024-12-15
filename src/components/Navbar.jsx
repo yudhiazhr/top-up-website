@@ -70,7 +70,6 @@ export const Navbar = ({ userData }) => {
           <img src={logo} className="w-32 h-9" alt="Logo" />
         </Link>
 
-        {/* Conditionally render the search form */}
         {!isOnProductPage && (
           <form className="w-80" onSubmit={handleSearch}>
             <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">
@@ -160,7 +159,7 @@ export const Navbar = ({ userData }) => {
               userData.photoUrl ||
               `https://png.pngtree.com/png-vector/20220817/ourmid/pngtree-man-avatar-with-circle-frame-vector-ilustration-png-image_6110328.png`
             }`}
-            className="rounded-sm mx-auto w-12 h-12"
+            className="rounded-sm mx-auto w-12 h-12 object-cover"
             alt="User Profile"
           />
           <h1>{userData.username}</h1>

@@ -93,13 +93,10 @@ export const Home = () => {
           </div>
         </div>
       </div>
-      {/* Jumbotron end */}
 
       <AllProduct style={"px-[300px]"} />
 
-      {/* Banner */}
       <img src={Banner} alt="Banner" />
-      {/* Banner end */}
     </div>
   );
 };

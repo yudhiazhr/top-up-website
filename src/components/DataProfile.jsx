@@ -15,6 +15,7 @@ import {
   reauthenticateWithCredential,
   updatePassword,
 } from "firebase/auth";
+import CryptoJS from "crypto-js";
 
 export const DataProfile = ({ userData }) => {
   const [username, setUsername] = useState(userData.username);
@@ -58,7 +59,6 @@ export const DataProfile = ({ userData }) => {
           ...doc.data(),
         }));
         setOrderData(orders);
-        console.log(orders);
       } catch (error) {
         console.error("Error fetching orders: ", error);
         setError("Failed to fetch order data.");
@@ -124,12 +124,14 @@ export const DataProfile = ({ userData }) => {
 
       await reauthenticateWithCredential(user, credential);
 
+      const encryptedNewPassword = CryptoJS.AES.encrypt(newPassword, "your-secret-key").toString();
+
       await updatePassword(user, newPassword);
 
       const userDocRef = doc(db, "user", user.uid);
       await updateDoc(userDocRef, {
         passwordUpdated: true,
-        password: newPassword,
+        password: encryptedNewPassword,
       });
 
       alert("Password updated successfully!");
@@ -152,7 +154,6 @@ export const DataProfile = ({ userData }) => {
 
   return (
     <>
-      {/* Total Success */}
       <div className="flex flex-col justify-center gap-6 w-full h-[166px] bg-[#2b2b2b] rounded-lg py-5 px-8 ">
         <h1>Total Belanja Sukses</h1>
         <p className="text-4xl font-bold">
@@ -169,7 +170,6 @@ export const DataProfile = ({ userData }) => {
         </p>
       </div>
 
-      {/* Total order detail */}
       <div className="grid grid-cols-4 py-5 px-8 w-full h-[144px] bg-[#2b2b2b] rounded-lg ">
         <div className="flex flex-col gap-6 justify-center">
           <h1>Total Pesanan</h1>
@@ -201,7 +201,6 @@ export const DataProfile = ({ userData }) => {
         </div>
       </div>
 
-      {/* Data Profile */}
       <div className="flex flex-col justify-center gap-8 w-full h-[306px] bg-[#2b2b2b] rounded-lg py-5 px-8 ">
         <h1 className="text-2xl font-bold">Data Profil</h1>
         <div className="w-full border-t border-[#535353] "></div>
