@@ -202,7 +202,7 @@ export const ProcessingPayment = () => {
                   <h1 className="">SCAN QR CODE dibawah ini</h1>
                   {orderData.status === "Belum Bayar" && countdown > 0 ? (
                     <QRCode
-                      value={`https://rrq-top-up.vercel.app/confirmation-payment/${id}`}
+                      value={`https://rrq-top-up.netlify.app/confirmation-payment/${id}`}
                       size={256}
                       fgColor="#000000"
                       className="p-6 bg-white rounded-lg"
