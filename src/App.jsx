@@ -10,7 +10,7 @@ import { DataProfile } from "./components/DataProfile";
 import { AllProduct } from "./components/AllProduct";
 import { ListGames } from "./components/ListGames";
 import { ListVoucher } from "./components/ListVoucher";
-import { Login } from "./auth/login";
+import { Login } from "./auth/Login";
 import { SignUp } from "./auth/SignUp";
 import React, { useEffect, useState } from "react";
 import { ProductOrder } from "./pages/PlaceOrder";
