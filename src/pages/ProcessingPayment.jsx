@@ -207,6 +207,7 @@ export const ProcessingPayment = () => {
                       fgColor="#000000"
                       className="p-6 bg-white rounded-lg"
                     />
+                    
                   ) : (
                     <p className="flex justify-center items-center w-64 h-64 rounded-lg bg-white text-black">
                       QR Code tidak tersedia

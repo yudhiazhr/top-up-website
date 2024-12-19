@@ -68,7 +68,7 @@ const App = React.memo(() => {
           />
 
           <Route path="/waiting-payment/:id" element={ isAuthenticated ? <ProcessingPayment userData={userData}/> : <Navigate to="/login"/>}/>
-          <Route path="/confirmation-payment/:id" element={ isAuthenticated ? <ConfirmationPayment userData={userData}/> : <Navigate to="/login"/>}/>
+          <Route path="/confirmation-payment/:id" element={ <ConfirmationPayment />}/>
 
           <Route path="/detail-order/:id" 
           element={ isAuthenticated ? <DetailOrder userData={userData}/> : <Navigate to="/login"/>}/>

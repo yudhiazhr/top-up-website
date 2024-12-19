@@ -24,6 +24,7 @@
     "react-google-recaptcha": "^3.1.0",
     "react-google-recaptcha-v3": "^1.10.1",
     "react-qr-code": "^2.0.15",
+    "react-qr-reader": "^3.0.0-beta-1",
     "react-router-dom": "^7.0.2"
   },
   "devDependencies": {
