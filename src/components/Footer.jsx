@@ -135,7 +135,7 @@ export const Footer = ({ userData }) => {
 
       <div className="w-full border-t"></div>
 
-      <h1 className="text-sm">© 2023 TokoMotor. All Rights Reserved.</h1>
+      <h1 className="text-sm">© 2023 RRQ Top Up. All Rights Reserved.</h1>
     </div>
   );
 };
